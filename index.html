@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html lang="cs" class="h-full bg-stone-950 text-stone-100 select-none">
+<html lang="cs" class="w-full h-full bg-stone-950 text-stone-100 select-none overflow-hidden">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Českobudějovická Bulka - Verze 1.1</title>
+  <!-- viewport-fit=cover je klíčový pro iPhone (vyplní celou obrazovku i kolem Dynamic Islandu) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0c0a09">
+  <title>Českobudějovická Bulka</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,15 +16,15 @@
 
   <style>
     :root {
-      /* Player & Trick Cards (proportioned for traditional single-headed Bohemian cards) */
-      --card-w: 82px;
-      --card-h: 132px;
+      /* Player & Trick Cards */
+      --card-w: 78px;
+      --card-h: 126px;
       /* Trump Cards: ~10% smaller */
-      --trump-w: 72px;
-      --trump-h: 116px;
+      --trump-w: 68px;
+      --trump-h: 110px;
       /* Won tricks pile cards */
-      --pile-w: 52px;
-      --pile-h: 76px;
+      --pile-w: 50px;
+      --pile-h: 72px;
       --felt-bg: radial-gradient(ellipse at 50% 50%, #165b33 0%, #0f4325 65%, #072213 100%);
     }
 
@@ -28,10 +33,26 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    body {
-      font-family: 'Inter', sans-serif;
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
       overflow: hidden;
       background-color: #0c0a09;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Ošetření bezpečných okrajů iPhonu (Dynamic Island a domovská lišta) */
+    .safe-left {
+      padding-left: max(8px, env(safe-area-inset-left));
+    }
+    .safe-right {
+      padding-right: max(8px, env(safe-area-inset-right));
+    }
+    .safe-bottom {
+      padding-bottom: max(4px, env(safe-area-inset-bottom));
     }
 
     .font-serif-title {
@@ -39,7 +60,7 @@
     }
 
     ::-webkit-scrollbar {
-      width: 4px;
+      width: 3px;
     }
     ::-webkit-scrollbar-track {
       background: rgba(0, 0, 0, 0.2);
@@ -51,7 +72,7 @@
 
     .felt-surface {
       background: var(--felt-bg);
-      box-shadow: inset 0 0 70px rgba(0, 0, 0, 0.7);
+      box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.7);
     }
 
     .card-slot {
@@ -62,11 +83,11 @@
       will-change: transform;
     }
 
-    /* Regular marias card container */
+    /* Mariášová karta */
     .marias-card {
       width: var(--card-w);
       height: var(--card-h);
-      border-radius: 9px;
+      border-radius: 8px;
       background: #fffdfa;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(0, 0, 0, 0.15);
       transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s ease-out, filter 0.22s ease-out, opacity 0.22s ease-out;
@@ -86,14 +107,14 @@
       box-shadow: 0 0 0 2px #eab308, 0 6px 14px rgba(0, 0, 0, 0.6);
     }
 
-    /* Two-tap selected state */
+    /* Dvoufázový výběr klepnutím */
     .card-slot.selected {
       z-index: 350 !important;
     }
 
     .card-slot.selected .marias-card {
-      transform: translateY(-24px) scale(1.12) !important;
-      box-shadow: 0 0 0 3.5px #facc15, 0 18px 30px rgba(0, 0, 0, 0.85), 0 0 22px rgba(250, 204, 21, 0.65) !important;
+      transform: translateY(-22px) scale(1.12) !important;
+      box-shadow: 0 0 0 3px #facc15, 0 16px 28px rgba(0, 0, 0, 0.85), 0 0 20px rgba(250, 204, 21, 0.65) !important;
     }
 
     .marias-card.unplayable {
@@ -106,13 +127,13 @@
       background: repeating-linear-gradient(
         45deg,
         #7f1d1d,
-        #7f1d1d 6px,
-        #991b1b 6px,
-        #991b1b 12px
+        #7f1d1d 5px,
+        #991b1b 5px,
+        #991b1b 10px
       );
-      border: 2px solid #fef3c7;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      border: 1.5px solid #fef3c7;
+      border-radius: 7px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
     }
 
     .trump-mat {
@@ -129,27 +150,27 @@
     }
 
     @keyframes playFromPlayer {
-      0% { transform: translateY(70px) scale(0.85); opacity: 0; }
+      0% { transform: translateY(60px) scale(0.85); opacity: 0; }
       100% { opacity: 1; }
     }
     @keyframes playFromBot {
-      0% { transform: translateY(-70px) scale(0.85); opacity: 0; }
+      0% { transform: translateY(-60px) scale(0.85); opacity: 0; }
       100% { opacity: 1; }
     }
     @keyframes sweepToPlayerPile {
       0% { transform: scale(1); opacity: 1; }
-      100% { transform: translate(175px, 95px) scale(0.48); opacity: 0; }
+      100% { transform: translate(165px, 85px) scale(0.48); opacity: 0; }
     }
     @keyframes sweepToBotPile {
       0% { transform: scale(1); opacity: 1; }
-      100% { transform: translate(175px, -95px) scale(0.48); opacity: 0; }
+      100% { transform: translate(165px, -85px) scale(0.48); opacity: 0; }
     }
 
     .anim-play-player {
-      animation: playFromPlayer 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      animation: playFromPlayer 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
     .anim-play-bot {
-      animation: playFromBot 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+      animation: playFromBot 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
     }
     .anim-collect-player {
       animation: sweepToPlayerPile 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
@@ -160,301 +181,269 @@
   </style>
 </head>
 
-<body class="h-full flex items-center justify-center p-1 sm:p-2 overflow-hidden bg-stone-950">
+<body class="w-full h-full flex flex-row overflow-hidden bg-stone-950">
 
-  <!-- iPhone 15 Landscape Viewport Wrapper (852:393 Aspect Ratio) -->
-  <div class="relative w-full max-w-[1020px] aspect-[852/393] max-h-[98vh] bg-stone-900 rounded-2xl overflow-hidden shadow-2xl border border-stone-800 flex flex-row">
-
-    <!-- ========================================== -->
-    <!-- LEFT COLUMN: NOTEBOOK & CHAT (EXACT 25%)   -->
-    <!-- ========================================== -->
-    <aside class="w-1/4 h-full bg-stone-950 border-r border-stone-800 flex flex-col justify-between p-2.5 z-20 shrink-0">
-      
-      <!-- Top Section: Header & Bank Information -->
-      <div class="space-y-2">
-        <div class="flex items-center justify-between pb-1.5 border-b border-stone-800/80">
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="font-serif-title text-amber-400 font-black text-xs tracking-wider">ZÁPISNÍK</span>
-          </div>
-          <button id="btnShowRules" class="text-[10px] bg-stone-800 hover:bg-stone-700 text-stone-300 px-2 py-0.5 rounded transition font-medium">
-            📖 Pravidla
-          </button>
+  <!-- ========================================== -->
+  <!-- LEVÝ SLOUPEC: ZÁPISNÍK & CHAT (25 %)       -->
+  <!-- ========================================== -->
+  <aside class="w-1/4 h-full bg-stone-950 border-r border-stone-800 flex flex-col justify-between p-2 safe-left z-20 shrink-0">
+    
+    <!-- Horní část: Zápisník a Bank -->
+    <div class="space-y-1.5">
+      <div class="flex items-center justify-between pb-1 border-b border-stone-800/80">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="font-serif-title text-amber-400 font-black text-xs tracking-wider">ZÁPISNÍK</span>
         </div>
-
-        <!-- Tavern Bank Card -->
-        <div class="bg-stone-900/90 rounded-lg p-2 border border-amber-900/30 flex items-center justify-between">
-          <div>
-            <div class="text-[9px] text-stone-400 font-semibold uppercase tracking-wider">Hospodský Bank</div>
-            <div id="bankDisplay" class="text-amber-400 font-serif-title font-extrabold text-base leading-tight">40 Kč</div>
-          </div>
-          <div class="text-right">
-            <div class="text-[9px] text-stone-400 font-semibold uppercase tracking-wider">Série</div>
-            <span id="streakBadge" class="inline-block text-[9px] bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold px-1.5 py-0.5 rounded">
-              1. hra
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div id="logContainer" class="flex-1 my-2 overflow-y-auto space-y-1.5 pr-1 text-[10px] leading-relaxed">
-        <div class="text-center text-stone-500 text-[9px] py-1">Vítej v Českobudějovické Bulce!</div>
-      </div>
-
-      <!-- Bottom Section: Quick Chat buttons & Text Input -->
-      <div class="space-y-1.5 pt-1.5 border-t border-stone-800/80">
-        <div class="grid grid-cols-4 gap-1">
-          <button id="btnQuickMinda" class="bg-stone-900 hover:bg-amber-950 text-amber-400 hover:text-amber-300 border border-stone-800 rounded py-1 text-[9px] font-bold transition">Minda! 🔥</button>
-          <button id="btnQuickBela" class="bg-stone-900 hover:bg-amber-950 text-amber-400 hover:text-amber-300 border border-stone-800 rounded py-1 text-[9px] font-bold transition">Béla! 👑</button>
-          <button id="btnQuickPivo" class="bg-stone-900 hover:bg-amber-950 text-amber-400 hover:text-amber-300 border border-stone-800 rounded py-1 text-[9px] font-bold transition">Pivo! 🍺</button>
-          <button id="btnQuickDobra" class="bg-stone-900 hover:bg-amber-950 text-amber-400 hover:text-amber-300 border border-stone-800 rounded py-1 text-[9px] font-bold transition">Dobrá! 👍</button>
-        </div>
-
-        <form id="chatForm" class="flex gap-1" onsubmit="event.preventDefault(); submitChatMessage();">
-          <input id="chatInput" type="text" placeholder="Zpráva pro Kubu..." class="flex-1 bg-stone-900 border border-stone-800 rounded px-2 py-1 text-[10px] text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500">
-          <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-2 py-1 rounded text-[10px] transition">OK</button>
-        </form>
-      </div>
-
-    </aside>
-
-    <!-- ========================================== -->
-    <!-- RIGHT AREA: FELT CARD TABLE (EXACT 75%)   -->
-    <!-- ========================================== -->
-    <main id="feltMainTable" class="w-3/4 h-full felt-surface relative flex flex-col justify-between overflow-hidden">
-      
-      <!-- Top HUD Header -->
-      <header class="w-full h-8 bg-black/40 border-b border-white/5 flex items-center justify-between px-3 z-30">
-        
-        <!-- Trump Indicator -->
-        <div class="flex items-center gap-2">
-          <span class="text-[10px] uppercase font-bold tracking-wider text-white/50">Trumf:</span>
-          <div id="activeTrumpBadge" class="flex items-center gap-1 bg-black/50 px-2 py-0.5 rounded border border-white/10 text-xs font-black text-white/90">
-            <span>—</span>
-          </div>
-        </div>
-
-        <!-- Trick Counter -->
-        <div class="bg-black/50 px-2.5 py-0.5 rounded border border-white/10 text-xs font-extrabold text-amber-400">
-          Štych: <span id="trickCounter" class="text-white">1</span> / 9
-        </div>
-
-        <!-- Scores and Quick Controls -->
-        <div class="flex items-center gap-3">
-          <div class="text-xs font-black flex items-center gap-2">
-            <span class="text-emerald-400">Ty: <span id="scoreTy">0</span></span>
-            <span class="text-white/30">:</span>
-            <span class="text-rose-400"><span id="scoreKuba">0</span> :Kuba</span>
-          </div>
-
-          <div class="flex items-center gap-1 pl-2 border-l border-white/10">
-            <button id="btnMute" class="p-1 text-white/60 hover:text-white transition text-xs" title="Zvuky">🔊</button>
-            <button id="btnTuner" class="p-1 text-white/60 hover:text-white transition text-xs" title="Nastavení & Rozměry">⚙️</button>
-          </div>
-        </div>
-      </header>
-
-      <section class="w-full flex-1 flex flex-col justify-between relative min-h-0 px-2 pb-1">
-        
-        <!-- TURN ACTION NOTICE IN THE TOP-LEFT CORNER -->
-        <div class="absolute left-2.5 top-1.5 z-30 pointer-events-none">
-          <div id="turnActionNotice" class="bg-amber-400 text-stone-950 font-black px-2.5 py-0.5 rounded-full text-[10px] shadow-lg flex items-center gap-1 border border-amber-300/80 transition-all">
-            Jsi na tahu: Klepnutím vyber kartu
-          </div>
-        </div>
-
-        <!-- Opponent Won Tricks Pile: Shifted inward by ~1/5 card height (~15px) -->
-        <div id="botTricksPile" class="absolute right-2.5 top-[15px] flex flex-col items-center pointer-events-none z-20">
-          <div class="relative w-[56px] h-[78px]" id="botTricksStackContainer">
-            <!-- Dynamically stacked won cards -->
-          </div>
-        </div>
-
-        <!-- Opponent Header & Hand Container (+10% larger cards) -->
-        <div class="w-full flex flex-col items-center pt-0.5 relative z-10">
-          <div class="flex items-center gap-2 mb-1">
-            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-            <span class="text-[11px] font-bold text-white/90">Kuba (Protihráč)</span>
-            <span id="botRoleBadge" class="text-[9px] bg-black/40 text-amber-400 px-1.5 rounded border border-white/10 font-medium">Rozdávající</span>
-          </div>
-          <div id="opponentHandContainer" class="flex items-center justify-center gap-1.5 h-11">
-            <!-- Dynamically populated opponent card backs -->
-          </div>
-        </div>
-
-        <div class="w-full flex-1 flex items-center justify-center relative min-h-0">
-          
-          <!-- DEDICATED TRUMP MAT (Left Side - 10% smaller dimensions) -->
-          <div id="trumpDeckArea" class="absolute left-2 top-1/2 -translate-y-1/2 flex flex-col items-center select-none z-10 trump-mat p-1">
-            <!-- Container tailored for 72x116px cards with 74° overlap -->
-            <div class="relative w-[84px] h-[134px] flex items-center justify-center overflow-visible">
-              
-              <!-- Bottom Trump Card: Exposed exactly 45% - 55% during bidding -->
-              <div id="bottomTrumpWrapper" class="absolute top-1 left-[4px] z-10 transition-all duration-300">
-                <div id="bottomTrumpCard" class="marias-card trump-card-size flex flex-col justify-between p-0 border border-amber-500/30"></div>
-              </div>
-
-              <!-- Top Trump Card: Rotated EXACTLY 74° across bottom half during bidding -->
-              <div id="topTrumpWrapper" class="absolute top-[34px] left-[4px] z-20 transition-all duration-300 origin-center">
-                <div id="topTrumpCard" class="marias-card trump-card-size flex flex-col justify-between p-0 transform rotate-[74deg] border border-stone-800 shadow-2xl"></div>
-              </div>
-
-            </div>
-
-            <!-- Quick Šíbování button -->
-            <button id="btnQuickSibovat" class="hidden mt-1 px-2.5 py-0.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold text-[9px] rounded-full shadow-lg active:scale-95 transition">
-              🔄 Šíbovat trumf
-            </button>
-          </div>
-
-          <!-- CLEAN TRICK CENTER (Pure felt, no dark boxes or borders) -->
-          <div class="relative flex flex-col items-center justify-center px-4 py-1">
-            <div id="trickCenterArea" class="relative w-[190px] h-[136px] flex items-center justify-center">
-              
-              <!-- Dynamic trick cards: first card underneath, second card ON TOP with offset (50% visibility) -->
-              <div id="trickSlotFirst" class="absolute transition-all duration-300 flex items-center justify-center"></div>
-              <div id="trickSlotSecond" class="absolute transition-all duration-300 flex items-center justify-center"></div>
-
-              <!-- Trick Winner & Points Banner (shown during 3-second inspection pause) -->
-              <div id="trickResultBanner" class="hidden absolute -bottom-5 left-1/2 -translate-x-1/2 bg-stone-900/95 text-amber-300 text-[10px] font-extrabold px-3 py-1 rounded-full border border-amber-500/40 shadow-2xl whitespace-nowrap z-40">
-                Štych bere Ty (+14 b)
-              </div>
-
-              <!-- Floating toast alert (MINDA!, BÉLA!, etc.) -->
-              <div id="toastAlert" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-amber-400 text-stone-950 font-black text-xs px-3 py-1 rounded-full shadow-2xl z-50 animate-bounce whitespace-nowrap">
-                MINDA!
-              </div>
-
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Player Won Tricks Pile: Shifted inward by ~1/5 card height (~15px) -->
-        <div id="playerTricksPile" class="absolute right-2.5 bottom-[15px] flex flex-col items-center pointer-events-none z-20">
-          <div class="relative w-[56px] h-[78px]" id="playerTricksStackContainer">
-            <!-- Dynamically stacked won cards -->
-          </div>
-        </div>
-
-        <!-- Player 9-Card Active Hand Container -->
-        <div class="w-full relative px-2 flex justify-center h-[146px]">
-          
-          <!-- Player Info Badge (Placed strictly bottom-left) -->
-          <div class="absolute left-2 bottom-1.5 z-20 flex items-center gap-1 bg-black/50 px-2 py-0.5 rounded-full border border-white/10 text-[10px]">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span class="font-extrabold text-white">Ty</span>
-            <span id="playerRoleBadge" class="text-[9px] text-amber-400 font-medium ml-0.5">Protihráč</span>
-          </div>
-
-          <!-- Cards container -->
-          <div id="playerHandContainer" class="relative w-full max-w-[660px] h-full flex items-end justify-center pb-2">
-            <!-- Dynamically populated fanned cards -->
-          </div>
-        </div>
-
-      </section>
-
-      <!-- TABLE-CENTERED VOLBA TRUMFU ("Neberu" instead of "Pas") -->
-      <div id="biddingBanner" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-stone-900/95 border border-amber-500/70 rounded-2xl px-4 py-3 shadow-2xl z-40 flex flex-col items-center gap-2.5 backdrop-blur-md max-w-[280px] w-full text-center">
-        <div>
-          <div class="text-[9px] text-amber-400 font-bold uppercase tracking-wider font-serif-title">Volba trumfu</div>
-          <div id="biddingText" class="text-white text-xs font-semibold mt-0.5">Chceš vzít spodní trumf?</div>
-        </div>
-        <div class="flex items-center gap-2 w-full justify-center">
-          <button id="btnTakeTrump" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-1.5 px-3 rounded-xl text-xs shadow-lg active:scale-95 transition">
-            ✅ Beru
-          </button>
-          <button id="btnPassTrump" class="flex-1 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold py-1.5 px-3 rounded-xl text-xs border border-stone-600 active:scale-95 transition">
-            ❌ Neberu
-          </button>
-        </div>
-      </div>
-
-      <!-- TABLE-CENTERED ROUND OVER SUMMARY -->
-      <div id="roundOverModal" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-stone-900/95 border border-amber-500/70 rounded-2xl max-w-[310px] w-full p-4 text-center shadow-2xl z-40 space-y-2.5 backdrop-blur-md">
-        <div id="roundSummaryTitle" class="font-serif-title font-black text-amber-400 text-base">Kolo skončilo!</div>
-        <div id="roundSummaryText" class="text-stone-300 text-[11px] leading-relaxed">Vyhodnocení hry...</div>
-        <button id="btnNextRound" class="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-2 rounded-xl text-xs transition shadow-lg mt-1 active:scale-95">
-          Nové kolo 🃏
+        <button id="btnShowRules" class="text-[9px] bg-stone-800 hover:bg-stone-700 text-stone-300 px-2 py-0.5 rounded transition font-medium">
+          📖 Pravidla
         </button>
       </div>
 
-    </main>
-
-  </div>
-
-  <!-- Rules Cheat-Sheet Modal -->
-  <div id="rulesModal" class="hidden absolute inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-5">
-    <div class="bg-stone-900 border border-amber-600/40 rounded-2xl max-w-2xl w-full p-4 sm:p-6 text-left shadow-2xl flex flex-col max-h-[90vh]">
-      <div class="flex items-center justify-between pb-2 border-b border-stone-800">
+      <!-- Hospodský Bank -->
+      <div class="bg-stone-900/90 rounded-lg p-1.5 border border-amber-900/30 flex items-center justify-between">
         <div>
-          <h2 class="font-serif-title font-black text-amber-400 text-base sm:text-lg">PRAVIDLA KARETNÍ HRY ČESKOBUDĚJOVICKÁ BULKA</h2>
-          <p class="text-[10px] text-stone-400">Oficiální pravidla tradiční jihočeské karetní hry pro 2 až 3 hráče</p>
+          <div class="text-[8px] text-stone-400 font-semibold uppercase tracking-wider">Hospodský Bank</div>
+          <div id="bankDisplay" class="text-amber-400 font-serif-title font-extrabold text-sm leading-tight">40 Kč</div>
+        </div>
+        <div class="text-right">
+          <div class="text-[8px] text-stone-400 font-semibold uppercase tracking-wider">Série</div>
+          <span id="streakBadge" class="inline-block text-[8px] bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold px-1.5 py-0.5 rounded">
+            1. hra
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seznam herních událostí a chatu -->
+    <div id="logContainer" class="flex-1 my-1.5 overflow-y-auto space-y-1 pr-1 text-[9px] leading-relaxed">
+      <div class="text-center text-stone-500 text-[8px] py-0.5">Vítej v Českobudějovické Bulce!</div>
+    </div>
+
+    <!-- Spodní část: Rychlé hlášky a textové pole -->
+    <div class="space-y-1 pt-1 border-t border-stone-800/80">
+      <div class="grid grid-cols-4 gap-1">
+        <button id="btnQuickMinda" class="bg-stone-900 hover:bg-amber-950 text-amber-400 hover:text-amber-300 border border-stone-800 rounded py-1 text-[8px] font-bold transition">Minda! 🔥</button>
+        <button id="btnQuickBela" class="bg-stone-900 hover:bg-amber-950 text-amber-400 hover:text-amber-300 border border-stone-800 rounded py-1 text-[8px] font-bold transition">Béla! 👑</button>
+        <button id="btnQuickPivo" class="bg-stone-900 hover:bg-amber-950 text-amber-400 hover:text-amber-300 border border-stone-800 rounded py-1 text-[8px] font-bold transition">Pivo! 🍺</button>
+        <button id="btnQuickDobra" class="bg-stone-900 hover:bg-amber-950 text-amber-400 hover:text-amber-300 border border-stone-800 rounded py-1 text-[8px] font-bold transition">Dobrá! 👍</button>
+      </div>
+
+      <form id="chatForm" class="flex gap-1" onsubmit="event.preventDefault(); submitChatMessage();">
+        <input id="chatInput" type="text" placeholder="Zpráva pro Kubu..." class="flex-1 bg-stone-900 border border-stone-800 rounded px-2 py-1 text-[9px] text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-500">
+        <button type="submit" class="bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold px-2 py-1 rounded text-[9px] transition">OK</button>
+      </form>
+    </div>
+
+  </aside>
+
+  <!-- ========================================== -->
+  <!-- PRAVÁ ČÁST: PLSTĚNÝ STŮL (75 %)           -->
+  <!-- ========================================== -->
+  <main id="feltMainTable" class="w-3/4 h-full felt-surface relative flex flex-col justify-between overflow-hidden safe-right">
+    
+    <!-- Horní stavová lišta (HUD) -->
+    <header class="w-full h-7 bg-black/40 border-b border-white/5 flex items-center justify-between px-3 z-30 shrink-0">
+      
+      <!-- Indikátor trumfu -->
+      <div class="flex items-center gap-1.5">
+        <span class="text-[9px] uppercase font-bold tracking-wider text-white/50">Trumf:</span>
+        <div id="activeTrumpBadge" class="flex items-center gap-1 bg-black/50 px-2 py-0.5 rounded border border-white/10 text-xs font-black text-white/90">
+          <span>—</span>
+        </div>
+      </div>
+
+      <!-- Počítadlo štychů -->
+      <div class="bg-black/50 px-2.5 py-0.5 rounded border border-white/10 text-xs font-extrabold text-amber-400">
+        Štych: <span id="trickCounter" class="text-white">1</span> / 9
+      </div>
+
+      <!-- Skóre a nastavení -->
+      <div class="flex items-center gap-2.5">
+        <div class="text-xs font-black flex items-center gap-1.5">
+          <span class="text-emerald-400">Ty: <span id="scoreTy">0</span></span>
+          <span class="text-white/30">:</span>
+          <span class="text-rose-400"><span id="scoreKuba">0</span> :Kuba</span>
+        </div>
+
+        <div class="flex items-center gap-1 pl-1.5 border-l border-white/10">
+          <button id="btnMute" class="p-1 text-white/60 hover:text-white transition text-xs" title="Zvuky">🔊</button>
+          <button id="btnTuner" class="p-1 text-white/60 hover:text-white transition text-xs" title="Nastavení & Rozměry">⚙️</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="w-full flex-1 flex flex-col justify-between relative min-h-0 px-2 pb-0.5">
+      
+      <!-- Informační štítek tahu v levém horním rohu plátna -->
+      <div class="absolute left-2.5 top-1 z-30 pointer-events-none">
+        <div id="turnActionNotice" class="bg-amber-400 text-stone-950 font-black px-2 py-0.5 rounded-full text-[9px] shadow-lg flex items-center gap-1 border border-amber-300/80 transition-all">
+          Jsi na tahu: Klepnutím vyber kartu
+        </div>
+      </div>
+
+      <!-- Uhrané štychy soupeře (posunuto o 1/5 karty od kraje) -->
+      <div id="botTricksPile" class="absolute right-2.5 top-[15px] flex flex-col items-center pointer-events-none z-20">
+        <div class="relative w-[52px] h-[74px]" id="botTricksStackContainer"></div>
+      </div>
+
+      <!-- Protihráč a jeho ruka -->
+      <div class="w-full flex flex-col items-center pt-0.5 relative z-10">
+        <div class="flex items-center gap-1.5 mb-0.5">
+          <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+          <span class="text-[10px] font-bold text-white/90">Kuba (Protihráč)</span>
+          <span id="botRoleBadge" class="text-[8px] bg-black/40 text-amber-400 px-1 rounded border border-white/10 font-medium">Rozdávající</span>
+        </div>
+        <div id="opponentHandContainer" class="flex items-center justify-center gap-1 h-10"></div>
+      </div>
+
+      <!-- STŘED STOLU: Trumfy vlevo + Štych uprostřed -->
+      <div class="w-full flex-1 flex items-center justify-center relative min-h-0">
+        
+        <!-- Podložka pro trumfy vlevo -->
+        <div id="trumpDeckArea" class="absolute left-2 top-1/2 -translate-y-1/2 flex flex-col items-center select-none z-10 trump-mat p-1">
+          <div class="relative w-[80px] h-[126px] flex items-center justify-center overflow-visible">
+            
+            <!-- Spodní trumf (odkrytý min 45-55 %) -->
+            <div id="bottomTrumpWrapper" class="absolute top-1 left-[4px] z-10 transition-all duration-300">
+              <div id="bottomTrumpCard" class="marias-card trump-card-size flex flex-col justify-between p-0 border border-amber-500/30"></div>
+            </div>
+
+            <!-- Vrchní trumf (pootočen přesně o 74° přes spodní polovinu) -->
+            <div id="topTrumpWrapper" class="absolute top-[32px] left-[4px] z-20 transition-all duration-300 origin-center">
+              <div id="topTrumpCard" class="marias-card trump-card-size flex flex-col justify-between p-0 transform rotate-[74deg] border border-stone-800 shadow-2xl"></div>
+            </div>
+
+          </div>
+
+          <!-- Tlačítko pro šíbování -->
+          <button id="btnQuickSibovat" class="hidden mt-1 px-2 py-0.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold text-[8px] rounded-full shadow-lg active:scale-95 transition">
+            🔄 Šíbovat trumf
+          </button>
+        </div>
+
+        <!-- Čistý střed pro štych -->
+        <div class="relative flex flex-col items-center justify-center px-4 py-1">
+          <div id="trickCenterArea" class="relative w-[180px] h-[130px] flex items-center justify-center">
+            <div id="trickSlotFirst" class="absolute transition-all duration-300 flex items-center justify-center"></div>
+            <div id="trickSlotSecond" class="absolute transition-all duration-300 flex items-center justify-center"></div>
+
+            <!-- Informace o vítězi štychu během 3s pauzy -->
+            <div id="trickResultBanner" class="hidden absolute -bottom-5 left-1/2 -translate-x-1/2 bg-stone-900/95 text-amber-300 text-[9px] font-extrabold px-2.5 py-0.5 rounded-full border border-amber-500/40 shadow-2xl whitespace-nowrap z-40">
+              Štych bere Ty (+14 b)
+            </div>
+
+            <!-- Plovoucí animovaný toast (MINDA, BÉLA) -->
+            <div id="toastAlert" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-amber-400 text-stone-950 font-black text-xs px-3 py-1 rounded-full shadow-2xl z-50 animate-bounce whitespace-nowrap">
+              MINDA!
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Uhrané štychy hráče (posunuto o 1/5 karty od kraje) -->
+      <div id="playerTricksPile" class="absolute right-2.5 bottom-[15px] flex flex-col items-center pointer-events-none z-20">
+        <div class="relative w-[52px] h-[74px]" id="playerTricksStackContainer"></div>
+      </div>
+
+      <!-- Ruka hráče (9 karet) -->
+      <div class="w-full relative px-2 flex justify-center h-[138px] safe-bottom">
+        
+        <!-- Označení Ty v levém dolním rohu -->
+        <div class="absolute left-2 bottom-1 z-20 flex items-center gap-1 bg-black/50 px-2 py-0.5 rounded-full border border-white/10 text-[9px]">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="font-extrabold text-white">Ty</span>
+          <span id="playerRoleBadge" class="text-[8px] text-amber-400 font-medium ml-0.5">Protihráč</span>
+        </div>
+
+        <div id="playerHandContainer" class="relative w-full max-w-[680px] h-full flex items-end justify-center pb-1"></div>
+      </div>
+
+    </section>
+
+    <!-- Plovoucí dialog pro volbu trumfu uprostřed stolu -->
+    <div id="biddingBanner" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-stone-900/95 border border-amber-500/70 rounded-2xl px-4 py-3 shadow-2xl z-40 flex flex-col items-center gap-2 backdrop-blur-md max-w-[270px] w-full text-center">
+      <div>
+        <div class="text-[8px] text-amber-400 font-bold uppercase tracking-wider font-serif-title">Volba trumfu</div>
+        <div id="biddingText" class="text-white text-xs font-semibold mt-0.5">Chceš vzít spodní trumf?</div>
+      </div>
+      <div class="flex items-center gap-2 w-full justify-center">
+        <button id="btnTakeTrump" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-1.5 px-3 rounded-xl text-xs shadow-lg active:scale-95 transition">
+          ✅ Beru
+        </button>
+        <button id="btnPassTrump" class="flex-1 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold py-1.5 px-3 rounded-xl text-xs border border-stone-600 active:scale-95 transition">
+          ❌ Neberu
+        </button>
+      </div>
+    </div>
+
+    <!-- Plovoucí dialog pro vyhodnocení kola uprostřed stolu -->
+    <div id="roundOverModal" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-stone-900/95 border border-amber-500/70 rounded-2xl max-w-[300px] w-full p-4 text-center shadow-2xl z-40 space-y-2 backdrop-blur-md">
+      <div id="roundSummaryTitle" class="font-serif-title font-black text-amber-400 text-sm">Kolo skončilo!</div>
+      <div id="roundSummaryText" class="text-stone-300 text-[10px] leading-relaxed">Vyhodnocení hry...</div>
+      <button id="btnNextRound" class="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-2 rounded-xl text-xs transition shadow-lg mt-1 active:scale-95">
+        Nové kolo 🃏
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Modál s pravidly -->
+  <div id="rulesModal" class="hidden absolute inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-5">
+    <div class="bg-stone-900 border border-amber-600/40 rounded-2xl max-w-2xl w-full p-4 text-left shadow-2xl flex flex-col max-h-[92vh]">
+      <div class="flex items-center justify-between pb-1.5 border-b border-stone-800">
+        <div>
+          <h2 class="font-serif-title font-black text-amber-400 text-sm sm:text-base">PRAVIDLA KARETNÍ HRY ČESKOBUDĚJOVICKÁ BULKA</h2>
+          <p class="text-[9px] text-stone-400">Oficiální pravidla tradiční jihočeské karetní hry pro 2 až 3 hráče</p>
         </div>
         <button id="btnCloseRules" class="text-stone-400 hover:text-white text-lg p-1">✕</button>
       </div>
 
-      <div class="flex-1 overflow-y-auto space-y-3 py-3 text-stone-200 text-xs leading-relaxed pr-2">
-        
+      <div class="flex-1 overflow-y-auto space-y-3 py-2 text-stone-200 text-[11px] leading-relaxed pr-2">
         <section>
-          <h3 class="font-bold text-amber-400 text-xs uppercase tracking-wider mb-1">1. Všeobecná ustanovení a herní materiál</h3>
-          <p class="text-stone-300">Českobudějovická Bulka je svébytná jihočeská karetní hra na štychy (patřící do širší rodiny her Klaberjass), adaptovaná pro svižný duelový formát s možností střídání a kumulovaným peněžním bankem.</p>
-          <ul class="list-disc list-inside mt-1 space-y-0.5 text-stone-300">
-            <li><strong>Varianta pro 3 hráče:</strong> V každém jednotlivém kole hrají dva aktivní hráči přímý duel, třetí pauzíruje na střídačce jako vyzyvatel.</li>
-            <li><strong>Varianta pro 2 hráče:</strong> Hrají výhradně dva hráči přímo proti sobě bez střídání, bankovní mechanika zůstává v duelovém režimu.</li>
+          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">1. Všeobecná ustanovení a herní materiál</h3>
+          <p class="text-stone-300">Českobudějovická Bulka je svébytná jihočeská karetní hra na štychy (rodina Klaberjass), adaptovaná pro svižný duelový formát s možností střídání a kumulovaným peněžním bankem.</p>
+          <ul class="list-disc list-inside mt-0.5 space-y-0.5 text-stone-300">
+            <li><strong>Varianta pro 3 hráče:</strong> V každém kole hrají dva hráči přímý duel, třetí pauzíruje na střídačce jako vyzyvatel.</li>
+            <li><strong>Varianta pro 2 hráče:</strong> Hrají dva hráči přímo proti sobě bez střídání, bankovní mechanika zůstává zachována.</li>
             <li><strong>Karty:</strong> Hraje se s balíčkem 32 mariášových karet (Červené, Kule, Zelené, Žaludy).</li>
           </ul>
         </section>
 
         <section>
-          <h3 class="font-bold text-amber-400 text-xs uppercase tracking-wider mb-1">2. Určení počátečního hracího pořadí</h3>
-          <p class="text-stone-300">Před první hrou sejmou hráči po jedné kartě. Při hře ve 2 hráčích se hráč s vyšší kartou stává rozdávajícím, s nižší kartou protihráčem. Při hře ve 3 hráčích je nejvyšší karta rozdávající, nejnižší protihráč a prostřední střídající.</p>
+          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">2. Určení počátečního hracího pořadí</h3>
+          <p class="text-stone-300">Před první hrou sejmou hráči po jedné kartě. Při hře ve 2 hráčích se hráč s vyšší kartou stává rozdávajícím, s nižší protihráčem.</p>
         </section>
 
         <section>
-          <h3 class="font-bold text-amber-400 text-xs uppercase tracking-wider mb-1">3. Příprava, rozdávání a manipulace s balíčkem</h3>
-          <p class="text-stone-300">Během rozdávání se žádné karty neberou do ruky – vše se vykládá přímo na stůl:</p>
-          <ol class="list-decimal list-inside mt-1 space-y-0.5 text-stone-300">
-            <li>Rozdávající položí 3 karty protihráči a 3 karty sobě.</li>
-            <li>Rozdávající položí další 3 karty protihráči a 3 karty sobě (každý má balíček 6 karet lícem dolů).</li>
-            <li>Rozdávající otočí jednu kartu doprostřed stolu lícem nahoru – to je <strong>spodní (první) trumf</strong>.</li>
-            <li>Rozdávající rozdá další 3 karty protihráči a 3 sobě lícem dolů – karty na dobrání.</li>
-            <li>Rozdávající pootočí zbytek balíčku o 90° napříč a položí jej na spodního trumfa, čímž odkryje <strong>vrchní (druhý) trumf</strong>.</li>
-            <li>Teprve nyní si oba hráči vezmou prvních 6 karet do ruky. Tři karty na dobrání zůstávají na stole.</li>
-          </ol>
+          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">3. Příprava, rozdávání a manipulace s balíčkem</h3>
+          <p class="text-stone-300">Během rozdávání se žádné karty neberou do ruky – vše se vykládá přímo na stůl (2× 3 karty každému lícem dolů, spodní trumf lícem nahoru, 3 karty na dobrání lícem dolů a otočený vrchní trumf pootočený o 90° napříč balíčkem). Teprve poté si hráči vezmou prvních 6 karet do ruky.</p>
         </section>
 
         <section>
-          <h3 class="font-bold text-amber-400 text-xs uppercase tracking-wider mb-1">4. Volba trumfu a manipulace s balíčkem</h3>
-          <p class="text-stone-300">Oba trumfy jsou na stole viditelné pro přesné plánování. Volba probíhá postupně:</p>
-          <ul class="list-disc list-inside mt-1 space-y-0.5 text-stone-300">
-            <li><strong>1. fáze – Spodní trumf:</strong> Jako první volí protihráč („beru“ / „neberu“), poté rozdávající. Při zvolení se karta přesune na zbytek balíčku.</li>
-            <li><strong>2. fáze – Horní trumf:</strong> Nastává pouze při odmítnutí spodního oběma hráči. Opět volí protihráč, pak rozdávající. Spodní trumf se zasune pod balíček.</li>
-            <li><strong>Dobrání do 9 karet:</strong> Po určení trumfu oba hráči doberou své 3 odložené karty do ruky (disponují 9 kartami). Kdo trumf zvolil, je volitel.</li>
-          </ul>
-        </section>
-
-        <section>
-          <h3 class="font-bold text-amber-400 text-xs uppercase tracking-wider mb-1">5. Výměna (šíbování) za trumfovou sedmičku či osmičku</h3>
+          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">4. Volba trumfu a manipulace s balíčkem</h3>
           <ul class="list-disc list-inside space-y-0.5 text-stone-300">
-            <li><strong>Při prvním (spodním) trumfu:</strong> Výměna trumfové sedmičky probíhá za 1 kartu a lze ji provést kdykoliv v průběhu hry.</li>
-            <li><strong>Při druhém (horním) trumfu:</strong> Lze odebrat i další navazující karty trumfové barvy (pouze před vynesením prvního štychu).</li>
-            <li><strong>Shoda barev obou trumfů:</strong> Lze vyšíbovat obě trumfové karty a karty pod nimi.</li>
-            <li><strong>Šíbování osmičkou:</strong> Leží-li na balíčku sedmička, lze šíbovat trumfovou osmičkou z ruky.</li>
-            <li><strong>Odevzdání karet:</strong> Při odebrání více karet musí hráč odevzdat libovolné karty zpět pod vloženou sedmičku, aby měl přesně 9 karet.</li>
+            <li><strong>1. fáze – Spodní trumf:</strong> Nejprve volí protihráč („beru“ / „neberu“), poté rozdávající.</li>
+            <li><strong>2. fáze – Horní trumf:</strong> Pouze při odmítnutí spodního oběma hráči. Opět volí protihráč, pak rozdávající.</li>
+            <li><strong>Dobrání do 9 karet:</strong> Po určení trumfu oba hráči doberou své 3 odložené karty do ruky (disponují 9 kartami).</li>
           </ul>
         </section>
 
         <section>
-          <h3 class="font-bold text-amber-400 text-xs uppercase tracking-wider mb-1">6. Neshoda při volbě trumfu</h3>
-          <p class="text-stone-300">Odmítnou-li oba hráči oba trumfy, karty se složí a míchá protihráč. <strong>Pravidlo třetí neshody:</strong> Při hrozící 3. neshodě v řadě je rozdávající povinen jít na trumfy, jinak automaticky prohrává a platí sankční vklad do banku.</p>
+          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">5. Výměna (šíbování) za trumfovou sedmičku či osmičku</h3>
+          <p class="text-stone-300">Hráč s trumfovou sedmičkou může provést výměnu za trumf z balíčku. Leží-li na balíčku sedmička, lze šíbovat trumfovou osmičkou.</p>
         </section>
 
         <section>
-          <h3 class="font-bold text-amber-400 text-xs uppercase tracking-wider mb-1">7. Hodnoty a síla karet</h3>
-          <div class="overflow-x-auto my-1.5 border border-stone-800 rounded-lg">
-            <table class="w-full text-[10px] text-center border-collapse">
+          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">6. Neshoda při volbě trumfu</h3>
+          <p class="text-stone-300">Odmítnou-li oba hráči oba trumfy, míchá protihráč. Při hrozící 3. neshodě v řadě je rozdávající povinen jít na trumfy, jinak automaticky prohrává a platí sankční vklad do banku.</p>
+        </section>
+
+        <section>
+          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">7. Hodnoty a síla karet</h3>
+          <div class="overflow-x-auto my-1 border border-stone-800 rounded">
+            <table class="w-full text-[9px] text-center border-collapse">
               <thead>
                 <tr class="bg-stone-800 text-amber-400 font-bold border-b border-stone-700">
                   <th class="p-1 text-left">Karta</th>
@@ -465,54 +454,43 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-stone-800 text-stone-300">
-                <tr><td class="p-1 text-left font-bold text-white">Svršek</td><td>1. (nejvyšší)</td><td class="text-amber-400 font-bold">20 b</td><td>4.</td><td>3 b</td></tr>
-                <tr><td class="p-1 text-left font-bold text-white">Devítka (Minda)</td><td>2.</td><td class="text-amber-400 font-bold">14 b</td><td>6.–8.</td><td>0 b</td></tr>
-                <tr><td class="p-1 text-left font-bold text-white">Eso</td><td>3.</td><td class="text-amber-400 font-bold">11 b</td><td>1. (nejvyšší)</td><td class="text-amber-400 font-bold">11 b</td></tr>
-                <tr><td class="p-1 text-left font-bold text-white">Desítka</td><td>4.</td><td class="text-amber-400 font-bold">10 b</td><td>2.</td><td class="text-amber-400 font-bold">10 b</td></tr>
-                <tr><td class="p-1 text-left font-bold text-white">Král</td><td>5.</td><td>4 b</td><td>3.</td><td>4 b</td></tr>
-                <tr><td class="p-1 text-left font-bold text-white">Spodek</td><td>6.</td><td>2 b</td><td>5.</td><td>2 b</td></tr>
-                <tr><td class="p-1 text-left font-bold text-white">Osma</td><td>7.</td><td>0 b</td><td>6.–8.</td><td>0 b</td></tr>
-                <tr><td class="p-1 text-left font-bold text-white">Sedma</td><td>8. (nejnižší)</td><td>0 b</td><td>6.–8. (nejnižší)</td><td>0 b</td></tr>
+                <tr><td class="p-0.5 text-left font-bold text-white">Svršek</td><td>1. (nejvyšší)</td><td class="text-amber-400 font-bold">20 b</td><td>4.</td><td>3 b</td></tr>
+                <tr><td class="p-0.5 text-left font-bold text-white">Devítka (Minda)</td><td>2.</td><td class="text-amber-400 font-bold">14 b</td><td>6.–8.</td><td>0 b</td></tr>
+                <tr><td class="p-0.5 text-left font-bold text-white">Eso</td><td>3.</td><td class="text-amber-400 font-bold">11 b</td><td>1. (nejvyšší)</td><td class="text-amber-400 font-bold">11 b</td></tr>
+                <tr><td class="p-0.5 text-left font-bold text-white">Desítka</td><td>4.</td><td class="text-amber-400 font-bold">10 b</td><td>2.</td><td class="text-amber-400 font-bold">10 b</td></tr>
+                <tr><td class="p-0.5 text-left font-bold text-white">Král</td><td>5.</td><td>4 b</td><td>3.</td><td>4 b</td></tr>
+                <tr><td class="p-0.5 text-left font-bold text-white">Spodek</td><td>6.</td><td>2 b</td><td>5.</td><td>2 b</td></tr>
+                <tr><td class="p-0.5 text-left font-bold text-white">Osma</td><td>7.</td><td>0 b</td><td>6.–8.</td><td>0 b</td></tr>
+                <tr><td class="p-0.5 text-left font-bold text-white">Sedma</td><td>8. (nejnižší)</td><td>0 b</td><td>6.–8. (nejnižší)</td><td>0 b</td></tr>
               </tbody>
             </table>
           </div>
-          <p class="text-stone-400 text-[10px]">Poslední štych přináší prémii 10 bodů. Celková základní suma činí 162 bodů.</p>
+          <p class="text-stone-400 text-[9px]">Poslední štych = 10 bodů. Celková základní suma činí 162 bodů.</p>
         </section>
 
         <section>
-          <h3 class="font-bold text-amber-400 text-xs uppercase tracking-wider mb-1">8. Hlášky (postupky, Minda a Béla)</h3>
+          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">8. Hlášky (postupky, Minda a Béla)</h3>
           <ul class="list-disc list-inside space-y-0.5 text-stone-300">
-            <li><strong>Postupky:</strong> Hlásí se před 1. štychem (7–8–9–10–Sp–Sv–K–E). Tercie = 20b, Kvarta = 50b, Kvinta = 100b, Čtveřice (10 až E) = 100b. Boduje jen hráč s vyšší hláškou.</li>
-            <li><strong>Béla (40 bodů):</strong> Trumfový Král + Svršek v ruce. Hlásí se slovem „Béla“ při vynesení první z nich a potvrzuje při druhé.</li>
-            <li><strong>Minda:</strong> Při vynesení trumfové devítky hráč hlásí „Minda!“.</li>
+            <li><strong>Postupky:</strong> 3 karty = 20b, 4 karty = 50b, 5 karet / čtveřice = 100b. Boduje jen hráč s vyšší hláškou.</li>
+            <li><strong>Béla (40 bodů):</strong> Trumfový Král + Svršek v ruce.</li>
+            <li><strong>Minda:</strong> Trumfová devítka.</li>
           </ul>
         </section>
 
         <section>
-          <h3 class="font-bold text-amber-400 text-xs uppercase tracking-wider mb-1">9. Pravidla sehrávky štychů</h3>
-          <ul class="list-disc list-inside space-y-0.5 text-stone-300">
-            <li><strong>Povinnost ctít barvu:</strong> Do nesené barvy musí hráč přiznat barvu. Přebíjet nemusí.</li>
-            <li><strong>Povinnost trumfovat:</strong> Kdo nemá nesenou barvu, <em>musí dát trumf</em>.</li>
-            <li><strong>Volnost v trumfech:</strong> Do trumfů není nutné přebíjet – lze podnést nižším trumfem.</li>
-            <li><strong>Odhoz:</strong> Pouze pokud hráč nemá barvu ani žádný trumf, smí odhodit cokoliv.</li>
-          </ul>
+          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">9. Pravidla sehrávky štychů</h3>
+          <p class="text-stone-300">Povinnost ctít barvu. Nemá-li hráč barvu, <em>musí dát trumf</em>. Do trumfů není nutné přebíjet (lze podnést nižším trumfem). Odhazovat libovolnou kartu lze jen při absenci nesené barvy i všech trumfů.</p>
         </section>
 
         <section>
-          <h3 class="font-bold text-amber-400 text-xs uppercase tracking-wider mb-1">10. Hospodský bankovní systém</h3>
-          <p class="text-stone-300">Hráči vloží základní vklad (např. 20 Kč). Volitel musí uhrát více bodů než soupeř, jinak spadnul a platí vklad do banku.</p>
-          <ul class="list-disc list-inside mt-1 space-y-0.5 text-stone-300">
-            <li><strong>1. výhra:</strong> Hráč je označen jako <strong>„Nový“</strong>.</li>
-            <li><strong>2. výhra v řadě:</strong> Hráč se udrží u stolu a je <strong>„Nahoře“</strong>.</li>
-            <li><strong>3. výhra v řadě:</strong> Hráč <strong>bere celý bank</strong>! Začíná nový cyklus.</li>
-          </ul>
+          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">10. Hospodský bankovní systém</h3>
+          <p class="text-stone-300">Volitel musí získat více bodů než soupeř, jinak spadnul a platí vklad do banku (20 Kč). 1. výhra = „Nový“, 2. výhra v řadě = „Nahoře“, 3. výhra v řadě = bere celý bank!</p>
         </section>
-
       </div>
     </div>
   </div>
 
-  <!-- Real-time Dimension Tuner & Settings Modal -->
+  <!-- Modál pro ladičku rozměrů a nastavení -->
   <div id="tunerModal" class="hidden absolute inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-stone-900 border border-stone-700 rounded-2xl max-w-xs w-full p-4 shadow-2xl space-y-3">
       <div class="flex items-center justify-between pb-1 border-b border-stone-800">
@@ -520,7 +498,6 @@
         <button id="btnCloseTuner" class="text-stone-400 hover:text-white text-xs">✕</button>
       </div>
 
-      <!-- Toggle Card Point Badges in bottom-left -->
       <div class="flex items-center justify-between py-1 border-b border-stone-800">
         <label for="togglePointBadges" class="text-stone-300 text-[10px] cursor-pointer">
           Body karet na kartě (vlevo dole)
@@ -528,7 +505,6 @@
         <input id="togglePointBadges" type="checkbox" checked class="accent-amber-500 w-4 h-4 cursor-pointer">
       </div>
 
-      <!-- Card Images Path Setting -->
       <div class="py-1 border-b border-stone-800 space-y-1">
         <div class="text-stone-300 text-[10px]">Cesta k obrázkům karet:</div>
         <div class="flex gap-2">
@@ -546,22 +522,22 @@
       <div>
         <label class="flex justify-between text-stone-300 text-[10px] mb-1">
           <span>Šířka hrací karty:</span>
-          <span id="lblTunerW" class="text-amber-400 font-bold">82 px</span>
+          <span id="lblTunerW" class="text-amber-400 font-bold">78 px</span>
         </label>
-        <input id="sliderTunerW" type="range" min="70" max="112" value="82" class="w-full accent-amber-500">
+        <input id="sliderTunerW" type="range" min="65" max="105" value="78" class="w-full accent-amber-500">
       </div>
       <div>
         <label class="flex justify-between text-stone-300 text-[10px] mb-1">
           <span>Výška hrací karty:</span>
-          <span id="lblTunerH" class="text-amber-400 font-bold">132 px</span>
+          <span id="lblTunerH" class="text-amber-400 font-bold">126 px</span>
         </label>
-        <input id="sliderTunerH" type="range" min="105" max="168" value="132" class="w-full accent-amber-500">
+        <input id="sliderTunerH" type="range" min="100" max="160" value="126" class="w-full accent-amber-500">
       </div>
     </div>
   </div>
 
   <script>
-    /* Audio Synthesis */
+    /* Zvukový subsystém */
     let audioCtx = null;
     let isMuted = false;
 
@@ -631,7 +607,7 @@
       }
     };
 
-    /* 32 Single-Headed Bohemian Card Definitions (OTK standard) */
+    /* Definice 32 jednohlavých mariášových karet */
     const SUITS = {
       CERVENE: { id: 'CERVENE', name: 'Červené', symbol: '♥', color: '#dc2626', prefix: 'c' },
       KULE:    { id: 'KULE',    name: 'Kule',    symbol: '🔔', color: '#d97706', prefix: 'k' },
@@ -679,14 +655,13 @@
     }
 
     const State = {
-      phase: 'DEALING', // 'DEALING', 'BIDDING_BOTTOM', 'BIDDING_TOP', 'PLAYING', 'ROUND_OVER'
-      dealer: 'BOT',    // 'USER' or 'BOT'
+      phase: 'DEALING',
+      dealer: 'BOT',
       activePlayer: 'USER',
       activeTrumpSuit: null,
-      trumpChooser: null, // 'USER' or 'BOT'
+      trumpChooser: null,
       consecutiveDisagreements: 0,
       
-      // Hands & Talons
       userHand: [],
       botHand: [],
       userDrawStack: [],
@@ -695,15 +670,12 @@
       topTrumpCard: null,
       remainingDeck: [],
 
-      // Two-tap mobile card selection
       selectedCardId: null,
 
-      // Current Trick
       trickNumber: 1,
       trickPlays: [],
       isResolvingTrick: false,
 
-      // Points & Tricks in current round
       userPoints: 0,
       botPoints: 0,
       userTricksWon: [],
@@ -711,11 +683,9 @@
       mindaAnnounced: false,
       belaAnnounced: false,
 
-      // Tavern Bank Metagame
       bankAmount: 40,
       consecutiveWins: { player: null, count: 0 },
 
-      // Display & Image settings
       showCardPoints: true,
       cardImgBasePath: './'
     };
@@ -774,7 +744,7 @@
       else if (author === 'Systém') authorClass = 'text-amber-400 font-bold';
 
       item.innerHTML = `
-        <div class="flex justify-between items-center text-[8px] text-stone-500 mb-0.5">
+        <div class="flex justify-between items-center text-[7px] text-stone-500 mb-0.5">
           <span class="${authorClass}">[${author}]</span>
           <span>${time}</span>
         </div>
@@ -861,7 +831,6 @@
         const banner = document.getElementById('biddingBanner');
         if (banner) banner.classList.add('hidden');
 
-        // AI Decision
         setTimeout(() => {
           const trumpCount = State.botHand.filter(c => c.suit === card.suit).length;
           const hasBig = State.botHand.some(c => c.suit === card.suit && (c.rankId === 'Sv' || c.rankId === '9' || c.rankId === 'E'));
@@ -874,7 +843,7 @@
             logEvent('Kuba', `Neberu ${phaseType === 'BOTTOM' ? 'spodní' : 'vrchní'} trumf.`);
             advanceBiddingAfterPass(player, phaseType);
           }
-        }, 900);
+        }, 850);
       }
     }
 
@@ -926,7 +895,7 @@
       updateUI();
 
       if (State.activePlayer === 'BOT') {
-        setTimeout(botPlayCard, 900);
+        setTimeout(botPlayCard, 850);
       }
     }
 
@@ -1039,7 +1008,6 @@
       const leadingCard = State.trickPlays.length > 0 ? State.trickPlays[0].card : null;
       if (!isCardPlayable(card, State.userHand, leadingCard, State.activeTrumpSuit)) return;
 
-      // FIRST TAP: Select and elevate card
       if (State.selectedCardId !== card.id) {
         State.selectedCardId = card.id;
         Sound.card();
@@ -1047,7 +1015,6 @@
         return;
       }
 
-      // SECOND TAP on selected card: Play it into the trick!
       State.selectedCardId = null;
       playPlayerCard(card);
     }
@@ -1084,7 +1051,7 @@
       } else {
         State.activePlayer = 'BOT';
         updateUI();
-        setTimeout(botPlayCard, 850);
+        setTimeout(botPlayCard, 800);
       }
     }
 
@@ -1173,7 +1140,7 @@
         resultBanner.classList.remove('hidden');
       }
 
-      // 3-SECOND MANDATORY INSPECTION PAUSE
+      // 3sekundová pauza pro prohlédnutí štychu
       setTimeout(() => {
         if (winner === 'USER') {
           State.userPoints += trickPoints;
@@ -1206,7 +1173,7 @@
             State.trickNumber++;
             updateUI();
             if (State.activePlayer === 'BOT') {
-              setTimeout(botPlayCard, 700);
+              setTimeout(botPlayCard, 650);
             }
           }
         }, 550);
@@ -1261,7 +1228,7 @@
       updateUI();
     }
 
-    /* Creates authentic card element with 32 OTK illustrations and resilient SVG fallback */
+    /* Vykreslení karty */
     function createCardElement(card, isFaceUp = true, customClasses = '') {
       const el = document.createElement('div');
       el.className = `marias-card ${customClasses}`;
@@ -1277,12 +1244,11 @@
       const imgUrl = getCardImagePath(card);
 
       el.innerHTML = `
-        <!-- Authentic OTK Card Illustration -->
         <img src="${imgUrl}" alt="${card.rankName} (${suit.name})" 
-             class="w-full h-full object-fill rounded-[8px] pointer-events-none select-none block"
+             class="w-full h-full object-fill rounded-[7px] pointer-events-none select-none block"
              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
 
-        <!-- Fallback Graphic Vector Card (displays seamlessly if images are loading/missing) -->
+        <!-- Fallback pokud chybí obrázek -->
         <div class="hidden absolute inset-0 flex flex-col justify-between p-1 bg-[#fffdfa] select-none pointer-events-none">
           <div class="flex justify-between items-center px-1 pt-0.5">
             <div class="flex items-center gap-0.5 leading-none">
@@ -1298,8 +1264,7 @@
           </div>
         </div>
 
-        <!-- Optional In-Game Point Badge (Bottom-Left) -->
-        ${showPtsBadge ? `<div class="absolute bottom-1 left-1.5 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow-md pointer-events-none z-10 border border-amber-600/30">${points}b</div>` : ''}
+        ${showPtsBadge ? `<div class="absolute bottom-1 left-1 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow-md pointer-events-none z-10 border border-amber-600/30">${points}b</div>` : ''}
       `;
 
       return el;
@@ -1312,7 +1277,7 @@
       const total = State.userHand.length;
       if (total === 0) return;
 
-      const spreadStep = total > 7 ? 48 : (total > 5 ? 56 : 64);
+      const spreadStep = total > 7 ? 46 : (total > 5 ? 54 : 62);
       const centerIdx = (total - 1) / 2;
       const leadingCard = State.trickPlays.length > 0 ? State.trickPlays[0].card : null;
 
@@ -1351,7 +1316,7 @@
       const total = State.botHand.length;
       for (let i = 0; i < total; i++) {
         const cardBack = document.createElement('div');
-        cardBack.className = 'w-[27px] h-[40px] card-back shrink-0 transition-transform';
+        cardBack.className = 'w-[25px] h-[36px] card-back shrink-0 transition-transform';
         container.appendChild(cardBack);
       }
     }
@@ -1381,13 +1346,13 @@
         if (bottomWrap) {
           bottomWrap.style.display = 'block';
           bottomWrap.style.transform = 'rotate(0deg)';
-          bottomWrap.style.top = '8px';
+          bottomWrap.style.top = '6px';
           bottomWrap.style.left = '4px';
         }
 
         bottomEl.className = 'marias-card trump-card-size flex flex-col justify-between p-0 border border-amber-500/50 shadow-xl';
         bottomEl.innerHTML = `
-          <img src="${imgUrl}" alt="${chosenCard.rankName}" class="w-full h-full object-fill rounded-[8px] pointer-events-none select-none block"
+          <img src="${imgUrl}" alt="${chosenCard.rankName}" class="w-full h-full object-fill rounded-[7px] pointer-events-none select-none block"
                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
           <div class="hidden absolute inset-0 flex flex-col justify-between p-1 bg-[#fffdfa]">
             <div class="flex items-center gap-0.5 leading-none">
@@ -1396,10 +1361,10 @@
             </div>
             <div class="text-center font-serif-title font-bold text-[9px] text-stone-600 pb-0.5">${chosenCard.rankName}</div>
           </div>
-          <div class="absolute bottom-1 right-1 text-[8px] bg-amber-400 rounded px-1 font-black text-stone-950 py-0.5 shadow z-10">
+          <div class="absolute bottom-1 right-1 text-[7px] bg-amber-400 rounded px-1 font-black text-stone-950 py-0.5 shadow z-10">
             TRUMF
           </div>
-          ${showPts ? `<div class="absolute bottom-1 left-1.5 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow pointer-events-none z-10">${cPts}b</div>` : ''}
+          ${showPts ? `<div class="absolute bottom-1 left-1 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow pointer-events-none z-10">${cPts}b</div>` : ''}
         `;
       } else {
         if (bottomWrap) {
@@ -1411,7 +1376,7 @@
         if (topWrap) {
           topWrap.style.display = 'block';
           topWrap.style.transform = 'rotate(74deg)';
-          topWrap.style.top = '34px';
+          topWrap.style.top = '32px';
           topWrap.style.left = '4px';
         }
 
@@ -1422,7 +1387,7 @@
 
         bottomEl.className = 'marias-card trump-card-size flex flex-col justify-between p-0 border border-amber-500/30';
         bottomEl.innerHTML = `
-          <img src="${bImg}" alt="${State.bottomTrumpCard.rankName}" class="w-full h-full object-fill rounded-[8px] pointer-events-none select-none block"
+          <img src="${bImg}" alt="${State.bottomTrumpCard.rankName}" class="w-full h-full object-fill rounded-[7px] pointer-events-none select-none block"
                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
           <div class="hidden absolute inset-0 flex flex-col justify-between p-1 bg-[#fffdfa]">
             <div class="flex items-center gap-0.5 leading-none">
@@ -1434,7 +1399,7 @@
           <div class="absolute bottom-1 right-1 text-[7px] bg-stone-900/80 text-stone-200 border border-stone-600 rounded px-1 font-bold py-0.5 z-10">
             1. SPODNÍ
           </div>
-          ${showBPts ? `<div class="absolute bottom-1 left-1.5 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow pointer-events-none z-10">${bPts}b</div>` : ''}
+          ${showBPts ? `<div class="absolute bottom-1 left-1 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow pointer-events-none z-10">${bPts}b</div>` : ''}
         `;
 
         const tImg = getCardImagePath(State.topTrumpCard);
@@ -1444,7 +1409,7 @@
 
         topEl.className = 'marias-card trump-card-size flex flex-col justify-between p-0 border border-stone-800 shadow-2xl';
         topEl.innerHTML = `
-          <img src="${tImg}" alt="${State.topTrumpCard.rankName}" class="w-full h-full object-fill rounded-[8px] pointer-events-none select-none block"
+          <img src="${tImg}" alt="${State.topTrumpCard.rankName}" class="w-full h-full object-fill rounded-[7px] pointer-events-none select-none block"
                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
           <div class="hidden absolute inset-0 flex flex-col justify-between p-1 bg-[#fffdfa]">
             <div class="flex items-center gap-0.5 leading-none">
@@ -1456,7 +1421,7 @@
           <div class="absolute bottom-1 right-1 text-[7px] bg-amber-400 rounded px-1 font-extrabold text-stone-950 py-0.5 shadow z-10">
             2. VRCHNÍ
           </div>
-          ${showTPts ? `<div class="absolute bottom-1 left-1.5 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow pointer-events-none z-10">${tPts}b</div>` : ''}
+          ${showTPts ? `<div class="absolute bottom-1 left-1 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow pointer-events-none z-10">${tPts}b</div>` : ''}
         `;
       }
 
@@ -1488,7 +1453,7 @@
         if (play1.player === 'USER') cardEl1.classList.add('anim-play-player');
         else cardEl1.classList.add('anim-play-bot');
         slot1.style.zIndex = '10';
-        slot1.style.transform = 'translate(-24px, 0px) rotate(-4deg)';
+        slot1.style.transform = 'translate(-22px, 0px) rotate(-4deg)';
         slot1.appendChild(cardEl1);
       }
 
@@ -1501,7 +1466,7 @@
           if (play2.player === 'USER') cardEl2.classList.add('anim-play-player');
           else cardEl2.classList.add('anim-play-bot');
           slot2.style.zIndex = '20';
-          slot2.style.transform = 'translate(22px, 2px) rotate(5deg)';
+          slot2.style.transform = 'translate(20px, 2px) rotate(5deg)';
           slot2.appendChild(cardEl2);
         }
       } else {
@@ -1588,30 +1553,29 @@
       if (pBadge) pBadge.textContent = State.dealer === 'USER' ? 'Rozdávající' : 'Protihráč';
       if (bBadge) bBadge.textContent = State.dealer === 'BOT' ? 'Rozdávající' : 'Protihráč';
 
-      // Turn Notice in top-left corner
       const notice = document.getElementById('turnActionNotice');
       if (notice) {
         if (State.phase === 'PLAYING') {
           if (State.isResolvingTrick) {
-            notice.className = 'bg-stone-900/90 text-stone-300 font-medium px-2.5 py-0.5 rounded-full text-[10px] border border-white/10';
+            notice.className = 'bg-stone-900/90 text-stone-300 font-medium px-2 py-0.5 rounded-full text-[9px] border border-white/10';
             notice.textContent = 'Vyhodnocení štychu...';
           } else if (State.activePlayer === 'USER') {
             if (State.selectedCardId) {
-              notice.className = 'bg-amber-400 text-stone-950 font-black px-2.5 py-0.5 rounded-full text-[10px] shadow-lg animate-pulse border border-amber-300';
+              notice.className = 'bg-amber-400 text-stone-950 font-black px-2 py-0.5 rounded-full text-[9px] shadow-lg animate-pulse border border-amber-300';
               notice.textContent = 'Klepni znovu na vybranou kartu 👆';
             } else {
-              notice.className = 'bg-amber-400 text-stone-950 font-black px-2.5 py-0.5 rounded-full text-[10px] shadow-lg border border-amber-300';
+              notice.className = 'bg-amber-400 text-stone-950 font-black px-2 py-0.5 rounded-full text-[9px] shadow-lg border border-amber-300';
               notice.textContent = 'Jsi na tahu: Klepnutím vyber kartu';
             }
           } else {
-            notice.className = 'bg-black/60 text-stone-300 font-medium px-2.5 py-0.5 rounded-full text-[10px] border border-white/10';
+            notice.className = 'bg-black/60 text-stone-300 font-medium px-2 py-0.5 rounded-full text-[9px] border border-white/10';
             notice.textContent = 'Kuba přemýšlí...';
           }
         } else if (State.phase.startsWith('BIDDING')) {
-          notice.className = 'bg-black/60 text-amber-300 font-medium px-2.5 py-0.5 rounded-full text-[10px] border border-amber-500/30';
+          notice.className = 'bg-black/60 text-amber-300 font-medium px-2 py-0.5 rounded-full text-[9px] border border-amber-500/30';
           notice.textContent = 'Probíhá volba trumfů';
         } else {
-          notice.className = 'bg-black/60 text-stone-300 font-medium px-2.5 py-0.5 rounded-full text-[10px] border border-white/10';
+          notice.className = 'bg-black/60 text-stone-300 font-medium px-2 py-0.5 rounded-full text-[9px] border border-white/10';
           notice.textContent = 'Čeká se na další kolo';
         }
       }
@@ -1642,7 +1606,6 @@
         };
       }
 
-      // Non-blocking Bidding Banner Buttons ("Neberu")
       const btnTake = document.getElementById('btnTakeTrump');
       const btnPass = document.getElementById('btnPassTrump');
       if (btnTake) {
@@ -1730,7 +1693,6 @@
         };
       }
 
-      // Card image path options
       const pathRoot = document.getElementById('pathRoot');
       const pathCards = document.getElementById('pathCards');
       const onPathChange = (val) => {
