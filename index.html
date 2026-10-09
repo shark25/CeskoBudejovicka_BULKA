@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Českobudějovická Bulka - Verze 1.0</title>
+  <title>Českobudějovická Bulka - Verze 1.1</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,15 +11,15 @@
 
   <style>
     :root {
-      /* Player & Trick Cards */
-      --card-w: 86px;
-      --card-h: 126px;
+      /* Player & Trick Cards (proportioned for traditional single-headed Bohemian cards) */
+      --card-w: 82px;
+      --card-h: 132px;
       /* Trump Cards: ~10% smaller */
-      --trump-w: 75px;
-      --trump-h: 110px;
-      /* Won tricks pile cards: ~10% larger */
+      --trump-w: 72px;
+      --trump-h: 116px;
+      /* Won tricks pile cards */
       --pile-w: 52px;
-      --pile-h: 74px;
+      --pile-h: 76px;
       --felt-bg: radial-gradient(ellipse at 50% 50%, #165b33 0%, #0f4325 65%, #072213 100%);
     }
 
@@ -62,17 +62,18 @@
       will-change: transform;
     }
 
-    /* Regular marias card */
+    /* Regular marias card container */
     .marias-card {
       width: var(--card-w);
       height: var(--card-h);
       border-radius: 9px;
       background: #fffdfa;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(0, 0, 0, 0.15);
       transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s ease-out, filter 0.22s ease-out, opacity 0.22s ease-out;
       transform-origin: bottom center;
       position: relative;
       user-select: none;
+      overflow: hidden;
     }
 
     .trump-card-size {
@@ -85,7 +86,7 @@
       box-shadow: 0 0 0 2px #eab308, 0 6px 14px rgba(0, 0, 0, 0.6);
     }
 
-    /* Two-tap Selected state on mobile/desktop */
+    /* Two-tap selected state */
     .card-slot.selected {
       z-index: 350 !important;
     }
@@ -122,7 +123,6 @@
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
     }
 
-    /* Won tricks pile cards: enlarged by ~10% */
     .pile-card {
       width: var(--pile-w);
       height: var(--pile-h);
@@ -249,7 +249,7 @@
 
           <div class="flex items-center gap-1 pl-2 border-l border-white/10">
             <button id="btnMute" class="p-1 text-white/60 hover:text-white transition text-xs" title="Zvuky">🔊</button>
-            <button id="btnTuner" class="p-1 text-white/60 hover:text-white transition text-xs" title="Ladička rozměrů">⚙️</button>
+            <button id="btnTuner" class="p-1 text-white/60 hover:text-white transition text-xs" title="Nastavení & Rozměry">⚙️</button>
           </div>
         </div>
       </header>
@@ -263,10 +263,10 @@
           </div>
         </div>
 
-        <!-- Opponent Won Tricks Pile: Shifted inward from top-right corner by ~1/5 card height (~15px) -->
+        <!-- Opponent Won Tricks Pile: Shifted inward by ~1/5 card height (~15px) -->
         <div id="botTricksPile" class="absolute right-2.5 top-[15px] flex flex-col items-center pointer-events-none z-20">
           <div class="relative w-[56px] h-[78px]" id="botTricksStackContainer">
-            <!-- Dynamically stacked won cards (+10% size, no text label) -->
+            <!-- Dynamically stacked won cards -->
           </div>
         </div>
 
@@ -286,17 +286,17 @@
           
           <!-- DEDICATED TRUMP MAT (Left Side - 10% smaller dimensions) -->
           <div id="trumpDeckArea" class="absolute left-2 top-1/2 -translate-y-1/2 flex flex-col items-center select-none z-10 trump-mat p-1">
-            <!-- Container tailored for 75x110px cards with 74° overlap -->
+            <!-- Container tailored for 72x116px cards with 74° overlap -->
             <div class="relative w-[84px] h-[134px] flex items-center justify-center overflow-visible">
               
               <!-- Bottom Trump Card: Exposed exactly 45% - 55% during bidding -->
               <div id="bottomTrumpWrapper" class="absolute top-1 left-[4px] z-10 transition-all duration-300">
-                <div id="bottomTrumpCard" class="marias-card trump-card-size flex flex-col justify-between p-1 text-[10px] border border-amber-500/30"></div>
+                <div id="bottomTrumpCard" class="marias-card trump-card-size flex flex-col justify-between p-0 border border-amber-500/30"></div>
               </div>
 
               <!-- Top Trump Card: Rotated EXACTLY 74° across bottom half during bidding -->
-              <div id="topTrumpWrapper" class="absolute top-[36px] left-[4px] z-20 transition-all duration-300 origin-center">
-                <div id="topTrumpCard" class="marias-card trump-card-size flex flex-col justify-between p-1 text-[10px] transform rotate-[74deg] border border-stone-800 shadow-2xl"></div>
+              <div id="topTrumpWrapper" class="absolute top-[34px] left-[4px] z-20 transition-all duration-300 origin-center">
+                <div id="topTrumpCard" class="marias-card trump-card-size flex flex-col justify-between p-0 transform rotate-[74deg] border border-stone-800 shadow-2xl"></div>
               </div>
 
             </div>
@@ -309,7 +309,7 @@
 
           <!-- CLEAN TRICK CENTER (Pure felt, no dark boxes or borders) -->
           <div class="relative flex flex-col items-center justify-center px-4 py-1">
-            <div id="trickCenterArea" class="relative w-[190px] h-[130px] flex items-center justify-center">
+            <div id="trickCenterArea" class="relative w-[190px] h-[136px] flex items-center justify-center">
               
               <!-- Dynamic trick cards: first card underneath, second card ON TOP with offset (50% visibility) -->
               <div id="trickSlotFirst" class="absolute transition-all duration-300 flex items-center justify-center"></div>
@@ -330,17 +330,17 @@
 
         </div>
 
-        <!-- Player Won Tricks Pile: Shifted inward from bottom-right corner by ~1/5 card height (~15px) -->
+        <!-- Player Won Tricks Pile: Shifted inward by ~1/5 card height (~15px) -->
         <div id="playerTricksPile" class="absolute right-2.5 bottom-[15px] flex flex-col items-center pointer-events-none z-20">
           <div class="relative w-[56px] h-[78px]" id="playerTricksStackContainer">
-            <!-- Dynamically stacked won cards (+10% size, no text label) -->
+            <!-- Dynamically stacked won cards -->
           </div>
         </div>
 
         <!-- Player 9-Card Active Hand Container -->
-        <div class="w-full relative px-2 flex justify-center h-[142px]">
+        <div class="w-full relative px-2 flex justify-center h-[146px]">
           
-          <!-- Player Info Badge (Placed strictly bottom-left, no body overlay) -->
+          <!-- Player Info Badge (Placed strictly bottom-left) -->
           <div class="absolute left-2 bottom-1.5 z-20 flex items-center gap-1 bg-black/50 px-2 py-0.5 rounded-full border border-white/10 text-[10px]">
             <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
             <span class="font-extrabold text-white">Ty</span>
@@ -348,14 +348,14 @@
           </div>
 
           <!-- Cards container -->
-          <div id="playerHandContainer" class="relative w-full max-w-[640px] h-full flex items-end justify-center pb-2">
+          <div id="playerHandContainer" class="relative w-full max-w-[660px] h-full flex items-end justify-center pb-2">
             <!-- Dynamically populated fanned cards -->
           </div>
         </div>
 
       </section>
 
-      <!-- TABLE-CENTERED VOLBA TRUMFU (Neberu instead of Pas) -->
+      <!-- TABLE-CENTERED VOLBA TRUMFU ("Neberu" instead of "Pas") -->
       <div id="biddingBanner" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-stone-900/95 border border-amber-500/70 rounded-2xl px-4 py-3 shadow-2xl z-40 flex flex-col items-center gap-2.5 backdrop-blur-md max-w-[280px] w-full text-center">
         <div>
           <div class="text-[9px] text-amber-400 font-bold uppercase tracking-wider font-serif-title">Volba trumfu</div>
@@ -472,7 +472,7 @@
                 <tr><td class="p-1 text-left font-bold text-white">Král</td><td>5.</td><td>4 b</td><td>3.</td><td>4 b</td></tr>
                 <tr><td class="p-1 text-left font-bold text-white">Spodek</td><td>6.</td><td>2 b</td><td>5.</td><td>2 b</td></tr>
                 <tr><td class="p-1 text-left font-bold text-white">Osma</td><td>7.</td><td>0 b</td><td>6.–8.</td><td>0 b</td></tr>
-                <tr><td class="p-1 text-left font-bold text-white">Sedma</td><td>8. (nejnižší)</td><td>0 b</td><td>6.–8.</td><td>0 b</td></tr>
+                <tr><td class="p-1 text-left font-bold text-white">Sedma</td><td>8. (nejnižší)</td><td>0 b</td><td>6.–8. (nejnižší)</td><td>0 b</td></tr>
               </tbody>
             </table>
           </div>
@@ -528,19 +528,34 @@
         <input id="togglePointBadges" type="checkbox" checked class="accent-amber-500 w-4 h-4 cursor-pointer">
       </div>
 
+      <!-- Card Images Path Setting -->
+      <div class="py-1 border-b border-stone-800 space-y-1">
+        <div class="text-stone-300 text-[10px]">Cesta k obrázkům karet:</div>
+        <div class="flex gap-2">
+          <label class="text-[9px] text-stone-400 flex items-center gap-1 cursor-pointer">
+            <input type="radio" name="pathOpt" value="./" id="pathRoot" checked class="accent-amber-500">
+            <span>Vedle index.html (./)</span>
+          </label>
+          <label class="text-[9px] text-stone-400 flex items-center gap-1 cursor-pointer">
+            <input type="radio" name="pathOpt" value="./cards/" id="pathCards" class="accent-amber-500">
+            <span>Složka cards/</span>
+          </label>
+        </div>
+      </div>
+
       <div>
         <label class="flex justify-between text-stone-300 text-[10px] mb-1">
           <span>Šířka hrací karty:</span>
-          <span id="lblTunerW" class="text-amber-400 font-bold">86 px</span>
+          <span id="lblTunerW" class="text-amber-400 font-bold">82 px</span>
         </label>
-        <input id="sliderTunerW" type="range" min="74" max="112" value="86" class="w-full accent-amber-500">
+        <input id="sliderTunerW" type="range" min="70" max="112" value="82" class="w-full accent-amber-500">
       </div>
       <div>
         <label class="flex justify-between text-stone-300 text-[10px] mb-1">
           <span>Výška hrací karty:</span>
-          <span id="lblTunerH" class="text-amber-400 font-bold">126 px</span>
+          <span id="lblTunerH" class="text-amber-400 font-bold">132 px</span>
         </label>
-        <input id="sliderTunerH" type="range" min="108" max="160" value="126" class="w-full accent-amber-500">
+        <input id="sliderTunerH" type="range" min="105" max="168" value="132" class="w-full accent-amber-500">
       </div>
     </div>
   </div>
@@ -616,22 +631,23 @@
       }
     };
 
+    /* 32 Single-Headed Bohemian Card Definitions (OTK standard) */
     const SUITS = {
-      CERVENE: { id: 'CERVENE', name: 'Červené', symbol: '♥', color: '#dc2626' },
-      KULE:    { id: 'KULE',    name: 'Kule',    symbol: '🔔', color: '#d97706' },
-      ZELENE:  { id: 'ZELENE',  name: 'Zelené',  symbol: '🍃', color: '#16a34a' },
-      ZALUDY:  { id: 'ZALUDY',  name: 'Žaludy',  symbol: '🌰', color: '#854d0e' }
+      CERVENE: { id: 'CERVENE', name: 'Červené', symbol: '♥', color: '#dc2626', prefix: 'c' },
+      KULE:    { id: 'KULE',    name: 'Kule',    symbol: '🔔', color: '#d97706', prefix: 'k' },
+      ZELENE:  { id: 'ZELENE',  name: 'Zelené',  symbol: '🍃', color: '#16a34a', prefix: 'e' },
+      ZALUDY:  { id: 'ZALUDY',  name: 'Žaludy',  symbol: '🌰', color: '#854d0e', prefix: 'z' }
     };
 
     const RANKS = [
-      { id: '7',  name: 'Sedma',  short: '7',  order: 1 },
-      { id: '8',  name: 'Osma',   short: '8',  order: 2 },
-      { id: '9',  name: 'Devítka',short: '9',  order: 3 },
-      { id: '10', name: 'Desítka',short: '10', order: 4 },
-      { id: 'Sp', name: 'Spodek', short: 'Sp', order: 5 },
-      { id: 'Sv', name: 'Svršek', short: 'Sv', order: 6 },
-      { id: 'K',  name: 'Král',   short: 'K',  order: 7 },
-      { id: 'E',  name: 'Eso',    short: 'E',  order: 8 }
+      { id: '7',  name: 'Sedma',  short: '7',  order: 1, fileRank: 'sedma' },
+      { id: '8',  name: 'Osma',   short: '8',  order: 2, fileRank: 'osma' },
+      { id: '9',  name: 'Devítka',short: '9',  order: 3, fileRank: 'devitka' },
+      { id: '10', name: 'Desítka',short: '10', order: 4, fileRank: 'desitka' },
+      { id: 'Sp', name: 'Spodek', short: 'Sp', order: 5, fileRank: 'spodek' },
+      { id: 'Sv', name: 'Svršek', short: 'Sv', order: 6, fileRank: 'svrsek' },
+      { id: 'K',  name: 'Král',   short: 'K',  order: 7, fileRank: 'kral' },
+      { id: 'E',  name: 'Eso',    short: 'E',  order: 8, fileRank: 'eso' }
     ];
 
     function getCardPowerAndPoints(card, trumpSuit) {
@@ -699,9 +715,17 @@
       bankAmount: 40,
       consecutiveWins: { player: null, count: 0 },
 
-      // Display settings
-      showCardPoints: true
+      // Display & Image settings
+      showCardPoints: true,
+      cardImgBasePath: './'
     };
+
+    function getCardImagePath(card) {
+      const suitInfo = SUITS[card.suit];
+      const rankInfo = RANKS.find(r => r.id === card.rankId);
+      const fileName = `${suitInfo.prefix}_${rankInfo ? rankInfo.fileRank : card.rankId}_sm.jpg`;
+      return `${State.cardImgBasePath}${fileName}`;
+    }
 
     function getStreakStatusText(player, count) {
       if (!player || count === 0) return '1. hra';
@@ -1237,6 +1261,7 @@
       updateUI();
     }
 
+    /* Creates authentic card element with 32 OTK illustrations and resilient SVG fallback */
     function createCardElement(card, isFaceUp = true, customClasses = '') {
       const el = document.createElement('div');
       el.className = `marias-card ${customClasses}`;
@@ -1249,21 +1274,32 @@
       const suit = SUITS[card.suit];
       const { points } = getCardPowerAndPoints(card, State.activeTrumpSuit);
       const showPtsBadge = State.showCardPoints && points > 0;
+      const imgUrl = getCardImagePath(card);
 
       el.innerHTML = `
-        <div class="flex justify-between items-center px-1.5 pt-1">
-          <div class="flex items-center gap-0.5 leading-none">
-            <span class="font-black text-sm" style="color: ${suit.color}">${card.rankShort}</span>
-            <span class="text-sm" style="color: ${suit.color}">${suit.symbol}</span>
+        <!-- Authentic OTK Card Illustration -->
+        <img src="${imgUrl}" alt="${card.rankName} (${suit.name})" 
+             class="w-full h-full object-fill rounded-[8px] pointer-events-none select-none block"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+
+        <!-- Fallback Graphic Vector Card (displays seamlessly if images are loading/missing) -->
+        <div class="hidden absolute inset-0 flex flex-col justify-between p-1 bg-[#fffdfa] select-none pointer-events-none">
+          <div class="flex justify-between items-center px-1 pt-0.5">
+            <div class="flex items-center gap-0.5 leading-none">
+              <span class="font-black text-sm" style="color: ${suit.color}">${card.rankShort}</span>
+              <span class="text-sm" style="color: ${suit.color}">${suit.symbol}</span>
+            </div>
+          </div>
+          <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <span class="text-3xl opacity-20" style="color: ${suit.color}">${suit.symbol}</span>
+          </div>
+          <div class="text-center font-serif-title font-bold text-[9px] text-stone-600 pb-0.5">
+            ${card.rankName}
           </div>
         </div>
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span class="text-3xl opacity-20" style="color: ${suit.color}">${suit.symbol}</span>
-        </div>
-        <div class="text-center font-serif-title font-bold text-[9px] text-stone-600 pb-1">
-          ${card.rankName}
-        </div>
-        ${showPtsBadge ? `<div class="absolute bottom-1 left-1.5 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow-sm pointer-events-none">${points}b</div>` : ''}
+
+        <!-- Optional In-Game Point Badge (Bottom-Left) -->
+        ${showPtsBadge ? `<div class="absolute bottom-1 left-1.5 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow-md pointer-events-none z-10 border border-amber-600/30">${points}b</div>` : ''}
       `;
 
       return el;
@@ -1315,7 +1351,6 @@
       const total = State.botHand.length;
       for (let i = 0; i < total; i++) {
         const cardBack = document.createElement('div');
-        // ENLARGED BY ~10%: 27px x 40px (was 24px x 36px)
         cardBack.className = 'w-[27px] h-[40px] card-back shrink-0 transition-transform';
         container.appendChild(cardBack);
       }
@@ -1337,88 +1372,91 @@
 
       if (State.phase === 'PLAYING' || State.phase === 'ROUND_OVER') {
         const chosenCard = (State.activeTrumpSuit === State.bottomTrumpCard.suit) ? State.bottomTrumpCard : State.topTrumpCard;
-        const cSuit = SUITS[chosenCard.suit];
         const { points: cPts } = getCardPowerAndPoints(chosenCard, chosenCard.suit);
         const showPts = State.showCardPoints && cPts > 0;
+        const imgUrl = getCardImagePath(chosenCard);
+        const cSuit = SUITS[chosenCard.suit];
 
         if (topWrap) topWrap.style.display = 'none';
         if (bottomWrap) {
           bottomWrap.style.display = 'block';
           bottomWrap.style.transform = 'rotate(0deg)';
-          bottomWrap.style.top = '10px';
+          bottomWrap.style.top = '8px';
           bottomWrap.style.left = '4px';
         }
 
-        bottomEl.className = 'marias-card trump-card-size flex flex-col justify-between p-1 text-[10px] border border-amber-500/50 shadow-xl';
+        bottomEl.className = 'marias-card trump-card-size flex flex-col justify-between p-0 border border-amber-500/50 shadow-xl';
         bottomEl.innerHTML = `
-          <div class="flex justify-between items-center px-1 pt-0.5">
+          <img src="${imgUrl}" alt="${chosenCard.rankName}" class="w-full h-full object-fill rounded-[8px] pointer-events-none select-none block"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="hidden absolute inset-0 flex flex-col justify-between p-1 bg-[#fffdfa]">
             <div class="flex items-center gap-0.5 leading-none">
               <span class="font-black text-sm" style="color: ${cSuit.color}">${chosenCard.rankShort}</span>
               <span class="text-sm" style="color: ${cSuit.color}">${cSuit.symbol}</span>
             </div>
+            <div class="text-center font-serif-title font-bold text-[9px] text-stone-600 pb-0.5">${chosenCard.rankName}</div>
           </div>
-          <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <span class="text-3xl opacity-20" style="color: ${cSuit.color}">${cSuit.symbol}</span>
-          </div>
-          <div class="absolute bottom-1 right-1 text-[8px] bg-amber-400 rounded px-1 font-black text-stone-950 py-0.5 shadow">
+          <div class="absolute bottom-1 right-1 text-[8px] bg-amber-400 rounded px-1 font-black text-stone-950 py-0.5 shadow z-10">
             TRUMF
           </div>
-          ${showPts ? `<div class="absolute bottom-1 left-1.5 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow-sm pointer-events-none">${cPts}b</div>` : ''}
+          ${showPts ? `<div class="absolute bottom-1 left-1.5 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow pointer-events-none z-10">${cPts}b</div>` : ''}
         `;
       } else {
         if (bottomWrap) {
           bottomWrap.style.display = 'block';
           bottomWrap.style.transform = 'rotate(0deg)';
-          bottomWrap.style.top = '4px';
+          bottomWrap.style.top = '2px';
           bottomWrap.style.left = '4px';
         }
         if (topWrap) {
           topWrap.style.display = 'block';
           topWrap.style.transform = 'rotate(74deg)';
-          topWrap.style.top = '36px';
+          topWrap.style.top = '34px';
           topWrap.style.left = '4px';
         }
 
-        const bSuit = SUITS[State.bottomTrumpCard.suit];
+        const bImg = getCardImagePath(State.bottomTrumpCard);
         const { points: bPts } = getCardPowerAndPoints(State.bottomTrumpCard, State.bottomTrumpCard.suit);
         const showBPts = State.showCardPoints && bPts > 0;
+        const bSuit = SUITS[State.bottomTrumpCard.suit];
 
-        bottomEl.className = 'marias-card trump-card-size flex flex-col justify-between p-1 text-[10px] border border-amber-500/30';
+        bottomEl.className = 'marias-card trump-card-size flex flex-col justify-between p-0 border border-amber-500/30';
         bottomEl.innerHTML = `
-          <div class="flex justify-between items-center px-1 pt-0.5">
+          <img src="${bImg}" alt="${State.bottomTrumpCard.rankName}" class="w-full h-full object-fill rounded-[8px] pointer-events-none select-none block"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="hidden absolute inset-0 flex flex-col justify-between p-1 bg-[#fffdfa]">
             <div class="flex items-center gap-0.5 leading-none">
               <span class="font-black text-sm" style="color: ${bSuit.color}">${State.bottomTrumpCard.rankShort}</span>
               <span class="text-sm" style="color: ${bSuit.color}">${bSuit.symbol}</span>
             </div>
+            <div class="text-center font-serif-title font-bold text-[9px] text-stone-600 pb-0.5">${State.bottomTrumpCard.rankName}</div>
           </div>
-          <div class="text-left font-serif-title font-bold text-[9px] text-stone-700 pl-1 mt-0.5">
-            ${bSuit.name}
-          </div>
-          <div class="absolute bottom-1 right-1 text-[7px] bg-stone-300 rounded px-1 font-bold text-stone-900 py-0.5">
+          <div class="absolute bottom-1 right-1 text-[7px] bg-stone-900/80 text-stone-200 border border-stone-600 rounded px-1 font-bold py-0.5 z-10">
             1. SPODNÍ
           </div>
-          ${showBPts ? `<div class="absolute bottom-1 left-1.5 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow-sm pointer-events-none">${bPts}b</div>` : ''}
+          ${showBPts ? `<div class="absolute bottom-1 left-1.5 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow pointer-events-none z-10">${bPts}b</div>` : ''}
         `;
 
-        const tSuit = SUITS[State.topTrumpCard.suit];
+        const tImg = getCardImagePath(State.topTrumpCard);
         const { points: tPts } = getCardPowerAndPoints(State.topTrumpCard, State.topTrumpCard.suit);
         const showTPts = State.showCardPoints && tPts > 0;
+        const tSuit = SUITS[State.topTrumpCard.suit];
 
-        topEl.className = 'marias-card trump-card-size flex flex-col justify-between p-1 text-[10px] border border-stone-800 shadow-2xl';
+        topEl.className = 'marias-card trump-card-size flex flex-col justify-between p-0 border border-stone-800 shadow-2xl';
         topEl.innerHTML = `
-          <div class="flex justify-between items-center px-1 pt-0.5">
+          <img src="${tImg}" alt="${State.topTrumpCard.rankName}" class="w-full h-full object-fill rounded-[8px] pointer-events-none select-none block"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+          <div class="hidden absolute inset-0 flex flex-col justify-between p-1 bg-[#fffdfa]">
             <div class="flex items-center gap-0.5 leading-none">
               <span class="font-black text-sm" style="color: ${tSuit.color}">${State.topTrumpCard.rankShort}</span>
               <span class="text-sm" style="color: ${tSuit.color}">${tSuit.symbol}</span>
             </div>
+            <div class="text-center font-serif-title font-bold text-[9px] text-stone-600 pb-0.5">${State.topTrumpCard.rankName}</div>
           </div>
-          <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <span class="text-2xl opacity-20" style="color: ${tSuit.color}">${tSuit.symbol}</span>
-          </div>
-          <div class="absolute bottom-1 right-1 text-[7px] bg-amber-400 rounded px-1 font-extrabold text-stone-950 py-0.5">
+          <div class="absolute bottom-1 right-1 text-[7px] bg-amber-400 rounded px-1 font-extrabold text-stone-950 py-0.5 shadow z-10">
             2. VRCHNÍ
           </div>
-          ${showTPts ? `<div class="absolute bottom-1 left-1.5 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow-sm pointer-events-none">${tPts}b</div>` : ''}
+          ${showTPts ? `<div class="absolute bottom-1 left-1.5 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow pointer-events-none z-10">${tPts}b</div>` : ''}
         `;
       }
 
@@ -1443,7 +1481,6 @@
       }
 
       const play1 = State.trickPlays[0];
-      // Prevent re-rendering or re-animating already laid card when selecting hand cards
       if (slot1.dataset.cardId !== play1.card.id) {
         slot1.innerHTML = '';
         slot1.dataset.cardId = play1.card.id;
@@ -1605,7 +1642,7 @@
         };
       }
 
-      // Non-blocking Bidding Banner Buttons (Neberu instead of Pas)
+      // Non-blocking Bidding Banner Buttons ("Neberu")
       const btnTake = document.getElementById('btnTakeTrump');
       const btnPass = document.getElementById('btnPassTrump');
       if (btnTake) {
@@ -1685,7 +1722,6 @@
           State.showCardPoints = e.target.checked;
           renderPlayerHand();
           renderTrumpDeck();
-          // Force refresh trick cards with updated badge setting
           const s1 = document.getElementById('trickSlotFirst');
           const s2 = document.getElementById('trickSlotSecond');
           if (s1) delete s1.dataset.cardId;
@@ -1693,6 +1729,22 @@
           renderTrickArea();
         };
       }
+
+      // Card image path options
+      const pathRoot = document.getElementById('pathRoot');
+      const pathCards = document.getElementById('pathCards');
+      const onPathChange = (val) => {
+        State.cardImgBasePath = val;
+        renderPlayerHand();
+        renderTrumpDeck();
+        const s1 = document.getElementById('trickSlotFirst');
+        const s2 = document.getElementById('trickSlotSecond');
+        if (s1) delete s1.dataset.cardId;
+        if (s2) delete s2.dataset.cardId;
+        renderTrickArea();
+      };
+      if (pathRoot) pathRoot.onchange = () => onPathChange('./');
+      if (pathCards) pathCards.onchange = () => onPathChange('./cards/');
 
       const sW = document.getElementById('sliderTunerW');
       const sH = document.getElementById('sliderTunerH');
