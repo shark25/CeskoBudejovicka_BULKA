@@ -2,13 +2,13 @@
 <html lang="cs" class="w-full h-full bg-stone-950 text-stone-100 select-none overflow-hidden">
 <head>
   <meta charset="UTF-8">
-  <!-- viewport-fit=cover je klíčový pro iPhone (vyplní celou obrazovku i kolem Dynamic Islandu) -->
+  <!-- viewport-fit=cover vyplní celou obrazovku iPhonu včetně oblasti kolem Dynamic Islandu -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="theme-color" content="#0c0a09">
-  <title>Českobudějovická Bulka</title>
+  <title>Českobudějovická Bulka – Oficiální verze v4</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,13 +16,13 @@
 
   <style>
     :root {
-      /* Player & Trick Cards */
+      /* Rozměry karet v ruce a ve štychu */
       --card-w: 78px;
       --card-h: 126px;
-      /* Trump Cards: ~10% smaller */
+      /* Rozměry trumfového balíčku (~10 % menší) */
       --trump-w: 68px;
       --trump-h: 110px;
-      /* Won tricks pile cards */
+      /* Rozměry karet v balíčcích uhraných štychů */
       --pile-w: 50px;
       --pile-h: 72px;
       --felt-bg: radial-gradient(ellipse at 50% 50%, #165b33 0%, #0f4325 65%, #072213 100%);
@@ -44,7 +44,7 @@
       font-family: 'Inter', sans-serif;
     }
 
-    /* Ošetření bezpečných okrajů iPhonu (Dynamic Island a domovská lišta) */
+    /* Bezpečné zóny pro iPhone (Dynamic Island a spodní lišta) */
     .safe-left {
       padding-left: max(8px, env(safe-area-inset-left));
     }
@@ -83,7 +83,6 @@
       will-change: transform;
     }
 
-    /* Mariášová karta */
     .marias-card {
       width: var(--card-w);
       height: var(--card-h);
@@ -107,7 +106,11 @@
       box-shadow: 0 0 0 2px #eab308, 0 6px 14px rgba(0, 0, 0, 0.6);
     }
 
-    /* Dvoufázový výběr klepnutím */
+    .marias-card.discard-selectable {
+      cursor: pointer;
+      box-shadow: 0 0 0 2px #38bdf8, 0 6px 14px rgba(0, 0, 0, 0.6);
+    }
+
     .card-slot.selected {
       z-index: 350 !important;
     }
@@ -195,9 +198,14 @@
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span class="font-serif-title text-amber-400 font-black text-xs tracking-wider">ZÁPISNÍK</span>
         </div>
-        <button id="btnShowRules" class="text-[9px] bg-stone-800 hover:bg-stone-700 text-stone-300 px-2 py-0.5 rounded transition font-medium">
-          📖 Pravidla
-        </button>
+        <div class="flex items-center gap-1">
+          <button id="btnDownloadHtmlLeft" class="text-[9px] bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded transition font-bold" title="Stáhnout index.html do PC">
+            💾 HTML
+          </button>
+          <button id="btnShowRules" class="text-[9px] bg-stone-800 hover:bg-stone-700 text-stone-300 px-2 py-0.5 rounded transition font-medium">
+            📖 Pravidla
+          </button>
+        </div>
       </div>
 
       <!-- Hospodský Bank -->
@@ -209,7 +217,7 @@
         <div class="text-right">
           <div class="text-[8px] text-stone-400 font-semibold uppercase tracking-wider">Série</div>
           <span id="streakBadge" class="inline-block text-[8px] bg-emerald-950 text-emerald-300 border border-emerald-800 font-bold px-1.5 py-0.5 rounded">
-            1. hra
+            Nová série
           </span>
         </div>
       </div>
@@ -217,14 +225,14 @@
 
     <!-- Seznam herních událostí a chatu -->
     <div id="logContainer" class="flex-1 my-1.5 overflow-y-auto space-y-1 pr-1 text-[9px] leading-relaxed">
-      <div class="text-center text-stone-500 text-[8px] py-0.5">Vítej v Českobudějovické Bulce!</div>
+      <div class="text-center text-stone-500 text-[8px] py-0.5">Vítej v Českobudějovické Bulce (v4)!</div>
     </div>
 
     <!-- Spodní část: Rychlé hlášky a textové pole -->
     <div class="space-y-1 pt-1 border-t border-stone-800/80">
       <div class="grid grid-cols-4 gap-1">
         <button id="btnQuickMinda" class="bg-stone-900 hover:bg-amber-950 text-amber-400 hover:text-amber-300 border border-stone-800 rounded py-1 text-[8px] font-bold transition">Minda! 🔥</button>
-        <button id="btnQuickBela" class="bg-stone-900 hover:bg-amber-950 text-amber-400 hover:text-amber-300 border border-stone-800 rounded py-1 text-[8px] font-bold transition">Béla! 👑</button>
+        <button id="btnQuickBela" class="bg-stone-900 hover:bg-amber-950 text-amber-400 hover:text-amber-300 border border-stone-800 rounded py-1 text-[8px] font-bold transition">Bela! 👑</button>
         <button id="btnQuickPivo" class="bg-stone-900 hover:bg-amber-950 text-amber-400 hover:text-amber-300 border border-stone-800 rounded py-1 text-[8px] font-bold transition">Pivo! 🍺</button>
         <button id="btnQuickDobra" class="bg-stone-900 hover:bg-amber-950 text-amber-400 hover:text-amber-300 border border-stone-800 rounded py-1 text-[8px] font-bold transition">Dobrá! 👍</button>
       </div>
@@ -245,17 +253,23 @@
     <!-- Horní stavová lišta (HUD) -->
     <header class="w-full h-7 bg-black/40 border-b border-white/5 flex items-center justify-between px-3 z-30 shrink-0">
       
-      <!-- Indikátor trumfu -->
+      <!-- Indikátor trumfu a volitele -->
       <div class="flex items-center gap-1.5">
         <span class="text-[9px] uppercase font-bold tracking-wider text-white/50">Trumf:</span>
         <div id="activeTrumpBadge" class="flex items-center gap-1 bg-black/50 px-2 py-0.5 rounded border border-white/10 text-xs font-black text-white/90">
           <span>—</span>
         </div>
+        <span id="chooserHeaderBadge" class="hidden text-[8px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.5 rounded font-bold"></span>
       </div>
 
-      <!-- Počítadlo štychů -->
-      <div class="bg-black/50 px-2.5 py-0.5 rounded border border-white/10 text-xs font-extrabold text-amber-400">
-        Štych: <span id="trickCounter" class="text-white">1</span> / 9
+      <!-- Počítadlo štychů a neshod -->
+      <div class="flex items-center gap-1.5">
+        <div class="bg-black/50 px-2.5 py-0.5 rounded border border-white/10 text-xs font-extrabold text-amber-400">
+          Štych: <span id="trickCounter" class="text-white">1</span> / 9
+        </div>
+        <div id="disagreementBadge" class="hidden bg-rose-950/80 px-1.5 py-0.5 rounded border border-rose-500/40 text-[9px] font-bold text-rose-300">
+          Neshody: 0/2
+        </div>
       </div>
 
       <!-- Skóre a nastavení -->
@@ -268,7 +282,7 @@
 
         <div class="flex items-center gap-1 pl-1.5 border-l border-white/10">
           <button id="btnMute" class="p-1 text-white/60 hover:text-white transition text-xs" title="Zvuky">🔊</button>
-          <button id="btnTuner" class="p-1 text-white/60 hover:text-white transition text-xs" title="Nastavení & Rozměry">⚙️</button>
+          <button id="btnTuner" class="p-1 text-white/60 hover:text-white transition text-xs" title="Nastavení, Rozměry & Stažení">⚙️</button>
         </div>
       </div>
     </header>
@@ -276,49 +290,72 @@
     <section class="w-full flex-1 flex flex-col justify-between relative min-h-0 px-2 pb-0.5">
       
       <!-- Informační štítek tahu v levém horním rohu plátna -->
-      <div class="absolute left-2.5 top-1 z-30 pointer-events-none">
-        <div id="turnActionNotice" class="bg-amber-400 text-stone-950 font-black px-2 py-0.5 rounded-full text-[9px] shadow-lg flex items-center gap-1 border border-amber-300/80 transition-all">
-          Jsi na tahu: Klepnutím vyber kartu
+      <div class="absolute left-2.5 top-1 z-30 flex items-center gap-1.5">
+        <div id="turnActionNotice" class="bg-amber-400 text-stone-950 font-black px-2 py-0.5 rounded-full text-[9px] shadow-lg flex items-center gap-1 border border-amber-300/80 transition-all pointer-events-none">
+          Připravuji stůl...
         </div>
+        <!-- Tlačítko pro položení karet bez pokuty při 100b hlášce soupeře (před dohráním 1. štychu) -->
+        <button id="btnFoldNoPenalty" class="hidden bg-rose-600 hover:bg-rose-500 text-white font-black px-2.5 py-0.5 rounded-full text-[9px] shadow-lg border border-rose-300 animate-pulse active:scale-95 transition">
+          🏳️ Položit karty (bez pokuty 20 Kč)
+        </button>
       </div>
 
-      <!-- Uhrané štychy soupeře (posunuto o 1/5 karty od kraje) -->
+      <!-- Uhrané štychy soupeře -->
       <div id="botTricksPile" class="absolute right-2.5 top-[15px] flex flex-col items-center pointer-events-none z-20">
         <div class="relative w-[52px] h-[74px]" id="botTricksStackContainer"></div>
       </div>
 
-      <!-- Protihráč a jeho ruka -->
+      <!-- Protihráč, jeho ruka (6 nebo 9 karet) a 3 karty na dobrání -->
       <div class="w-full flex flex-col items-center pt-0.5 relative z-10">
         <div class="flex items-center gap-1.5 mb-0.5">
           <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-          <span class="text-[10px] font-bold text-white/90">Kuba (Protihráč)</span>
+          <span class="text-[10px] font-bold text-white/90">Kuba</span>
           <span id="botRoleBadge" class="text-[8px] bg-black/40 text-amber-400 px-1 rounded border border-white/10 font-medium">Rozdávající</span>
         </div>
-        <div id="opponentHandContainer" class="flex items-center justify-center gap-1 h-10"></div>
+        <div class="flex items-center justify-center gap-3">
+          <div id="opponentHandContainer" class="flex items-center justify-center gap-1 h-10"></div>
+          <!-- 3 zakryté karty na dobrání před Kubou (viditelné při volbě trumfu) -->
+          <div id="botDrawStackContainer" class="hidden flex items-center gap-0.5 bg-black/30 px-1.5 py-0.5 rounded border border-amber-400/30" title="3 karty na dobrání">
+            <span class="text-[7px] text-amber-300 font-bold mr-1">Dobrání:</span>
+            <div class="w-[18px] h-[28px] card-back"></div>
+            <div class="w-[18px] h-[28px] card-back -ml-2"></div>
+            <div class="w-[18px] h-[28px] card-back -ml-2"></div>
+          </div>
+        </div>
       </div>
 
       <!-- STŘED STOLU: Trumfy vlevo + Štych uprostřed -->
       <div class="w-full flex-1 flex items-center justify-center relative min-h-0">
         
-        <!-- Podložka pro trumfy vlevo -->
-        <div id="trumpDeckArea" class="absolute left-2 top-1/2 -translate-y-1/2 flex flex-col items-center select-none z-10 trump-mat p-1">
-          <div class="relative w-[80px] h-[126px] flex items-center justify-center overflow-visible">
+        <!-- Podložka pro trumfový balíček (lícem nahoru) vlevo -->
+        <div id="trumpDeckArea" class="absolute left-2 top-1/2 -translate-y-1/2 flex flex-col items-center select-none z-20 trump-mat p-1.5">
+          <div class="text-[7px] text-stone-300 font-semibold uppercase tracking-wider mb-0.5">
+            Balíček (<span id="deckCountLabel">12</span> lícem ↑)
+          </div>
+          <div class="relative w-[92px] h-[132px] flex items-center justify-center overflow-visible">
             
-            <!-- Spodní trumf (odkrytý min 45-55 %) -->
-            <div id="bottomTrumpWrapper" class="absolute top-1 left-[4px] z-10 transition-all duration-300">
+            <!-- Spodní vrstva představující lícem otočený zbytek balíčku pod trumfem -->
+            <div id="faceUpDeckStackVisual" class="absolute top-[26px] left-[12px] z-0 pointer-events-none"></div>
+
+            <!-- Spodní (1.) trumf (viditelný z 45 % až 55 %) -->
+            <div id="bottomTrumpWrapper" class="absolute top-[2px] left-[11px] z-10 transition-all duration-300">
               <div id="bottomTrumpCard" class="marias-card trump-card-size flex flex-col justify-between p-0 border border-amber-500/30"></div>
             </div>
 
-            <!-- Vrchní trumf (pootočen přesně o 74° přes spodní polovinu) -->
-            <div id="topTrumpWrapper" class="absolute top-[32px] left-[4px] z-20 transition-all duration-300 origin-center">
-              <div id="topTrumpCard" class="marias-card trump-card-size flex flex-col justify-between p-0 transform rotate-[74deg] border border-stone-800 shadow-2xl"></div>
+            <!-- Vrchní (2.) trumf a lícem otočený balíček (náhodně pootočen -75° až +75°) -->
+            <div id="topTrumpWrapper" class="absolute top-[30px] left-[11px] z-20 transition-all duration-300 origin-center">
+              <div id="topTrumpCard" class="marias-card trump-card-size flex flex-col justify-between p-0 border border-stone-800 shadow-2xl"></div>
             </div>
 
           </div>
 
-          <!-- Tlačítko pro šíbování -->
-          <button id="btnQuickSibovat" class="hidden mt-1 px-2 py-0.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold text-[8px] rounded-full shadow-lg active:scale-95 transition">
+          <!-- Tlačítko pro šíbování (7 nebo 8) -->
+          <button id="btnQuickSibovat" class="hidden mt-1 px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-[8px] rounded-full shadow-lg active:scale-95 transition border border-amber-200">
             🔄 Šíbovat trumf
+          </button>
+          <!-- Tlačítko pro přeskočení šíbování před 1. štychem, pokud vynáší Kuba -->
+          <button id="btnSkipPreTrickSib" class="hidden mt-1 px-2 py-0.5 bg-stone-800 hover:bg-stone-700 text-stone-200 font-bold text-[8px] rounded-full shadow active:scale-95 transition border border-stone-600">
+            Hrát bez šíbování ▶
           </button>
         </div>
 
@@ -333,8 +370,8 @@
               Štych bere Ty (+14 b)
             </div>
 
-            <!-- Plovoucí animovaný toast (MINDA, BÉLA) -->
-            <div id="toastAlert" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-amber-400 text-stone-950 font-black text-xs px-3 py-1 rounded-full shadow-2xl z-50 animate-bounce whitespace-nowrap">
+            <!-- Plovoucí animovaný toast (MINDA, BELA, HLÁŠKA) -->
+            <div id="toastAlert" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-amber-400 text-stone-950 font-black text-xs px-3 py-1 rounded-full shadow-2xl z-50 animate-bounce whitespace-nowrap border border-amber-200">
               MINDA!
             </div>
           </div>
@@ -342,19 +379,29 @@
 
       </div>
 
-      <!-- Uhrané štychy hráče (posunuto o 1/5 karty od kraje) -->
+      <!-- Uhrané štychy hráče -->
       <div id="playerTricksPile" class="absolute right-2.5 bottom-[15px] flex flex-col items-center pointer-events-none z-20">
         <div class="relative w-[52px] h-[74px]" id="playerTricksStackContainer"></div>
       </div>
 
-      <!-- Ruka hráče (9 karet) -->
+      <!-- Ruka hráče (6 nebo 9 karet) + 3 zakryté karty na dobrání -->
       <div class="w-full relative px-2 flex justify-center h-[138px] safe-bottom">
         
-        <!-- Označení Ty v levém dolním rohu -->
-        <div class="absolute left-2 bottom-1 z-20 flex items-center gap-1 bg-black/50 px-2 py-0.5 rounded-full border border-white/10 text-[9px]">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span class="font-extrabold text-white">Ty</span>
-          <span id="playerRoleBadge" class="text-[8px] text-amber-400 font-medium ml-0.5">Protihráč</span>
+        <!-- Označení Ty + 3 karty na dobrání v levém dolním rohu -->
+        <div class="absolute left-2 bottom-1 z-20 flex flex-col items-start gap-1">
+          <!-- 3 zakryté karty na dobrání před hráčem (viditelné při volbě trumfu) -->
+          <div id="userDrawStackContainer" class="hidden flex items-center gap-0.5 bg-black/55 px-1.5 py-1 rounded-lg border border-amber-400/40 shadow-lg" title="Tvé 3 zakryté karty na dobrání po určení trumfu">
+            <span class="text-[8px] text-amber-300 font-bold mr-1">Na dobrání (3):</span>
+            <div class="w-[22px] h-[34px] card-back"></div>
+            <div class="w-[22px] h-[34px] card-back -ml-2.5"></div>
+            <div class="w-[22px] h-[34px] card-back -ml-2.5"></div>
+          </div>
+
+          <div class="flex items-center gap-1 bg-black/50 px-2 py-0.5 rounded-full border border-white/10 text-[9px]">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span class="font-extrabold text-white">Ty</span>
+            <span id="playerRoleBadge" class="text-[8px] text-amber-400 font-medium ml-0.5">Protihráč</span>
+          </div>
         </div>
 
         <div id="playerHandContainer" class="relative w-full max-w-[680px] h-full flex items-end justify-center pb-1"></div>
@@ -362,10 +409,35 @@
 
     </section>
 
-    <!-- Plovoucí dialog pro volbu trumfu uprostřed stolu -->
-    <div id="biddingBanner" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-stone-900/95 border border-amber-500/70 rounded-2xl px-4 py-3 shadow-2xl z-40 flex flex-col items-center gap-2 backdrop-blur-md max-w-[270px] w-full text-center">
+    <!-- Plovoucí dialog pro úvodní sejmutí karty před 1. hrou (Sekce 2) -->
+    <div id="initialCutModal" class="hidden absolute inset-0 bg-black/75 backdrop-blur-sm z-40 flex items-center justify-center p-3">
+      <div class="bg-stone-900/95 border border-amber-500/70 rounded-2xl max-w-[330px] w-full p-4 text-center shadow-2xl space-y-2.5">
+        <div class="text-[9px] text-amber-400 font-bold uppercase tracking-wider font-serif-title">Zahájení hry (Pravidla v4 – Sekce 2)</div>
+        <div class="text-white text-xs font-extrabold">Sejmutí karty pro určení rozdávajícího</div>
+        <p id="initialCutDesc" class="text-stone-300 text-[10px] leading-relaxed">
+          Před zahájením první hry sejmou oba hráči po jedné kartě. Hráč s vyšší kartou (7 – 8 – 9 – 10 – Sp – Sv – K – E) se stává rozdávajícím.
+        </p>
+        <div id="initialCutCardsArea" class="hidden flex items-center justify-center gap-6 py-1">
+          <div class="flex flex-col items-center gap-1">
+            <span class="text-[9px] font-bold text-emerald-400">Ty</span>
+            <div id="cutCardUserSlot"></div>
+          </div>
+          <div class="text-amber-400 font-black text-xs">VS</div>
+          <div class="flex flex-col items-center gap-1">
+            <span class="text-[9px] font-bold text-rose-400">Kuba</span>
+            <div id="cutCardBotSlot"></div>
+          </div>
+        </div>
+        <button id="btnPerformCut" class="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-2 rounded-xl text-xs transition shadow-lg active:scale-95">
+          🃏 Sejmout kartu z balíčku
+        </button>
+      </div>
+    </div>
+
+    <!-- Plovoucí dialog pro volbu trumfu uprostřed stolu (včetně povinné volby při 3. neshodě) -->
+    <div id="biddingBanner" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-stone-900/95 border border-amber-500/70 rounded-2xl px-4 py-3 shadow-2xl z-40 flex flex-col items-center gap-2 backdrop-blur-md max-w-[290px] w-full text-center">
       <div>
-        <div class="text-[8px] text-amber-400 font-bold uppercase tracking-wider font-serif-title">Volba trumfu</div>
+        <div id="biddingSubtitle" class="text-[8px] text-amber-400 font-bold uppercase tracking-wider font-serif-title">Volba trumfu</div>
         <div id="biddingText" class="text-white text-xs font-semibold mt-0.5">Chceš vzít spodní trumf?</div>
       </div>
       <div class="flex items-center gap-2 w-full justify-center">
@@ -378,8 +450,24 @@
       </div>
     </div>
 
+    <!-- Plovoucí dialog při 100bodové hlášce soupeře (možnost položit karty před dohráním 1. štychu) -->
+    <div id="hundredMeldFoldModal" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-stone-900/95 border border-rose-500/80 rounded-2xl max-w-[310px] w-full p-4 text-center shadow-2xl z-40 space-y-2.5 backdrop-blur-md">
+      <div class="font-serif-title font-black text-rose-400 text-xs uppercase tracking-wider">Soupeř hlásí 100 bodů!</div>
+      <div id="hundredMeldFoldText" class="text-stone-200 text-[10px] leading-relaxed">
+        Obránce Kuba nahlásil 100bodovou hlášku. Jako volitel trumfů můžeš před dohráním 1. štychu položit karty – hru prohraješ, ale jsi zproštěn platby pokuty 20 Kč do banku!
+      </div>
+      <div class="flex gap-2">
+        <button id="btnConfirmFoldNoPenalty" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-black py-2 px-2 rounded-xl text-[10px] shadow-lg active:scale-95 transition">
+          🏳️ Položit karty (0 Kč pokuta)
+        </button>
+        <button id="btnContinueAgainstHundred" class="flex-1 bg-stone-800 hover:bg-stone-700 text-stone-200 font-bold py-2 px-2 rounded-xl text-[10px] border border-stone-600 active:scale-95 transition">
+          ⚔️ Hrát dál
+        </button>
+      </div>
+    </div>
+
     <!-- Plovoucí dialog pro vyhodnocení kola uprostřed stolu -->
-    <div id="roundOverModal" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-stone-900/95 border border-amber-500/70 rounded-2xl max-w-[300px] w-full p-4 text-center shadow-2xl z-40 space-y-2 backdrop-blur-md">
+    <div id="roundOverModal" class="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-stone-900/95 border border-amber-500/70 rounded-2xl max-w-[315px] w-full p-4 text-center shadow-2xl z-40 space-y-2 backdrop-blur-md">
       <div id="roundSummaryTitle" class="font-serif-title font-black text-amber-400 text-sm">Kolo skončilo!</div>
       <div id="roundSummaryText" class="text-stone-300 text-[10px] leading-relaxed">Vyhodnocení hry...</div>
       <button id="btnNextRound" class="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-2 rounded-xl text-xs transition shadow-lg mt-1 active:scale-95">
@@ -389,13 +477,13 @@
 
   </main>
 
-  <!-- Modál s pravidly -->
+  <!-- Modál s kompletními pravidly ČB Bulky v4 -->
   <div id="rulesModal" class="hidden absolute inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-5">
     <div class="bg-stone-900 border border-amber-600/40 rounded-2xl max-w-2xl w-full p-4 text-left shadow-2xl flex flex-col max-h-[92vh]">
       <div class="flex items-center justify-between pb-1.5 border-b border-stone-800">
         <div>
-          <h2 class="font-serif-title font-black text-amber-400 text-sm sm:text-base">PRAVIDLA KARETNÍ HRY ČESKOBUDĚJOVICKÁ BULKA</h2>
-          <p class="text-[9px] text-stone-400">Oficiální pravidla tradiční jihočeské karetní hry pro 2 až 3 hráče</p>
+          <h2 class="font-serif-title font-black text-amber-400 text-sm sm:text-base">PRAVIDLA KARETNÍ HRY ČESKOBUDĚJOVICKÁ BULKA (v4)</h2>
+          <p class="text-[9px] text-stone-400">Oficiální pravidla tradiční jihočeské karetní hry pro 2 až 3 hráče (verze 4)</p>
         </div>
         <button id="btnCloseRules" class="text-stone-400 hover:text-white text-lg p-1">✕</button>
       </div>
@@ -403,41 +491,46 @@
       <div class="flex-1 overflow-y-auto space-y-3 py-2 text-stone-200 text-[11px] leading-relaxed pr-2">
         <section>
           <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">1. Všeobecná ustanovení a herní materiál</h3>
-          <p class="text-stone-300">Českobudějovická Bulka je svébytná jihočeská karetní hra na štychy (rodina Klaberjass), adaptovaná pro svižný duelový formát s možností střídání a kumulovaným peněžním bankem.</p>
+          <p class="text-stone-300">Českobudějovická Bulka je svébytná jihočeská karetní hra na štychy (patřící do širší rodiny her Klaberjass), adaptovaná pro svižný duelový formát s možností střídání a kumulovaným peněžním bankem.</p>
           <ul class="list-disc list-inside mt-0.5 space-y-0.5 text-stone-300">
-            <li><strong>Varianta pro 3 hráče:</strong> V každém kole hrají dva hráči přímý duel, třetí pauzíruje na střídačce jako vyzyvatel.</li>
-            <li><strong>Varianta pro 2 hráče:</strong> Hrají dva hráči přímo proti sobě bez střídání, bankovní mechanika zůstává zachována.</li>
-            <li><strong>Karty:</strong> Hraje se s balíčkem 32 mariášových karet (Červené, Kule, Zelené, Žaludy).</li>
+            <li><strong>Varianta pro 3 hráče:</strong> V každém kole hrají dva aktivní hráči přímý duel u stolu, třetí pauzíruje na střídačce jako vyzyvatel.</li>
+            <li><strong>Varianta pro 2 hráče:</strong> Hrají výhradně dva hráči přímo proti sobě bez střídání, bankovní mechanika zůstává zachována v duelovém režimu.</li>
+            <li><strong>Karty:</strong> Hraje se s balíčkem 32 mariášových karet ve čtyřech barvách: Červené, Kule, Zelené a Žaludy.</li>
           </ul>
         </section>
 
         <section>
           <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">2. Určení počátečního hracího pořadí</h3>
-          <p class="text-stone-300">Před první hrou sejmou hráči po jedné kartě. Při hře ve 2 hráčích se hráč s vyšší kartou stává rozdávajícím, s nižší protihráčem.</p>
+          <p class="text-stone-300">Před zahájením první hry sejmou hráči po jedné kartě z promíchaného balíčku (v pořadí 7 – 8 – 9 – 10 – Spodek – Svršek – Král – Eso). Při hře ve dvou se hráč s vyšší kartou stává rozdávajícím, hráč s nižší kartou je protihráč.</p>
         </section>
 
         <section>
           <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">3. Příprava, rozdávání a manipulace s balíčkem</h3>
-          <p class="text-stone-300">Během rozdávání se žádné karty neberou do ruky – vše se vykládá přímo na stůl (2× 3 karty každému lícem dolů, spodní trumf lícem nahoru, 3 karty na dobrání lícem dolů a otočený vrchní trumf pootočený o 90° napříč balíčkem). Teprve poté si hráči vezmou prvních 6 karet do ruky.</p>
+          <p class="text-stone-300">Během rozdávání se žádné karty neberou do ruky – vše se vykládá přímo na stůl: 2× po 3 kartách každému lícem dolů (6 karet), poté se otočí <strong>spodní (první) trumf</strong> lícem nahoru, rozdají se další 3 karty každému lícem dolů (<strong>karty na dobrání</strong>) a zbytek nerozdaného balíčku se pootočí napříč (v rozsahu -75° až +75° tak, aby spodní trumf zůstal viditelný ze 45–55 %) a položí se <strong>lícem nahoru</strong> na spodního trumfa, čímž odkryje <strong>vrchní (druhý) trumf</strong>. Celý zbytek balíčku pod ním leží rovněž lícem nahoru. Teprve poté si hráči vezmou prvních 6 karet do ruky, zatímco 3 karty na dobrání zůstávají ležet zakryté na stole.</p>
         </section>
 
         <section>
           <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">4. Volba trumfu a manipulace s balíčkem</h3>
           <ul class="list-disc list-inside space-y-0.5 text-stone-300">
-            <li><strong>1. fáze – Spodní trumf:</strong> Nejprve volí protihráč („beru“ / „neberu“), poté rozdávající.</li>
-            <li><strong>2. fáze – Horní trumf:</strong> Pouze při odmítnutí spodního oběma hráči. Opět volí protihráč, pak rozdávající.</li>
-            <li><strong>Dobrání do 9 karet:</strong> Po určení trumfu oba hráči doberou své 3 odložené karty do ruky (disponují 9 kartami).</li>
+            <li><strong>1. fáze – Spodní trumf:</strong> První se vyjadřuje protihráč („beru“ / „neberu“), poté rozdávající. Je-li zvolen spodní trumf, přesune se tato karta nahoru na balíček.</li>
+            <li><strong>2. fáze – Horní trumf:</strong> Nastává, když oba odmítnou spodní trumf (ke spodnímu se již nelze vrátit). Opět volí protihráč, pak rozdávající. Je-li zvolen horní trumf, spodní trumf se zasune dospodu pod balíček.</li>
+            <li><strong>Dobrání do 9 karet:</strong> Po určení trumfu oba hráči vezmou své 3 odložené karty ze stolu do ruky (mají 9 karet). Kdo trumf zvolil, je <strong>volitel</strong>.</li>
           </ul>
         </section>
 
         <section>
           <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">5. Výměna (šíbování) za trumfovou sedmičku či osmičku</h3>
-          <p class="text-stone-300">Hráč s trumfovou sedmičkou může provést výměnu za trumf z balíčku. Leží-li na balíčku sedmička, lze šíbovat trumfovou osmičkou.</p>
+          <ul class="list-disc list-inside space-y-0.5 text-stone-300">
+            <li><strong>Spodní trumf (různé barvy trumfů):</strong> Výměna 1 za 1 kdykoliv v průběhu hry, když je hráč na tahu.</li>
+            <li><strong>Horní trumf NEBO shoda barev obou trumfů:</strong> Před odehráním 1. štychu smí hráč po vložení trumfové 7 (nebo 8, leží-li nahoře 7) odebrat vrchní trumf (při shodě barev oba trumfy) a k němu i každou další bezprostředně následující kartu trumfové barvy v lícem otočeném balíčku pod ním. Po 1. štychu lze měnit už jen 1 vrchní kartu.</li>
+            <li><strong>Šíbování osmičkou:</strong> Pouze tehdy, když na balíčku leží jako trumfová karta sedmička (7).</li>
+            <li><strong>Pravidlo odevzdání karet:</strong> Při odebrání více trumfových karet před 1. štychem musí hráč odložit zpět dospodu pod vloženou 7/8 potřebný počet libovolných karet z ruky (včetně případně nabrané 7), aby měl v ruce přesně 9 karet.</li>
+          </ul>
         </section>
 
         <section>
           <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">6. Neshoda při volbě trumfu</h3>
-          <p class="text-stone-300">Odmítnou-li oba hráči oba trumfy, míchá protihráč. Při hrozící 3. neshodě v řadě je rozdávající povinen jít na trumfy, jinak automaticky prohrává a platí sankční vklad do banku.</p>
+          <p class="text-stone-300">Odmítnou-li oba hráči oba trumfy, karty se složí a rozdává protihráč. <strong>Pravidlo třetí neshody:</strong> Po dvou neshodách v řadě probíhá ve 3. kole volba u spodního trumfu běžně. Pokud oba odmítnou spodní trumf a protihráč odmítne i horní trumf, má rozdávající u horního trumfu povinnou volbu (ke spodnímu se již nemůže vrátit): musí buď <strong>vzít horní trumf</strong>, nebo <strong>hru vzdát</strong> (připlatí 20 Kč do banku, protihráč vyhrává a postupuje v sérii „Nový“ → „Nahoře“ → „Bere celý bank“).</p>
         </section>
 
         <section>
@@ -465,36 +558,38 @@
               </tbody>
             </table>
           </div>
-          <p class="text-stone-400 text-[9px]">Poslední štych = 10 bodů. Celková základní suma činí 162 bodů.</p>
+          <p class="text-stone-400 text-[9px]">Poslední (9.) štych = +10 bodů. Celková základní suma činí 162 bodů.</p>
         </section>
 
         <section>
-          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">8. Hlášky (postupky, Minda a Béla)</h3>
+          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">8. Hlášky (postupky, čtveřice, Minda a Bela)</h3>
           <ul class="list-disc list-inside space-y-0.5 text-stone-300">
-            <li><strong>Postupky:</strong> 3 karty = 20b, 4 karty = 50b, 5 karet / čtveřice = 100b. Boduje jen hráč s vyšší hláškou.</li>
-            <li><strong>Béla (40 bodů):</strong> Trumfový Král + Svršek v ruce.</li>
-            <li><strong>Minda:</strong> Trumfová devítka.</li>
+            <li><strong>Postupky (7–8–9–10–Sp–Sv–K–E):</strong> 3 karty = 20 b, 4 karty = 50 b, 5 a více karet = 100 b.</li>
+            <li><strong>Čtveřice (9, 10, Sp, Sv, K, E):</strong> 4 karty stejné hodnoty = 100 b (7 a 8 se nepočítají).</li>
+            <li><strong>Porovnávání hlášek (BEZ vlivu trumfů):</strong> 1. Vyšší bodová hodnota (100 &gt; 50 &gt; 20). 2. Vyšší nominální karta (9 &lt; 10 &lt; Sp &lt; Sv &lt; K &lt; E; trumfy nehrají roli). 3. Při naprosté shodě vyhrává <strong>protihráč</strong> (vynáší a hlásí jako první). Vítězi porovnání se sčítají všechny jeho hlášky, soupeři propadají (0 b).</li>
+            <li><strong>Bela (40 bodů):</strong> Trumfový Král + trumfový Svršek v ruce před 1. štychem. Hlásí se „Bela!“ při 1. kartě (zatím 0 b) a dokončuje při 2. kartě (+40 b za Belu a trumfový Svršek se vynuluje na 0 b; čistý přínos +20 b).</li>
+            <li><strong>Minda:</strong> Při vynesení trumfové devítky hráč hlásí „Minda!“.</li>
           </ul>
         </section>
 
         <section>
           <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">9. Pravidla sehrávky štychů</h3>
-          <p class="text-stone-300">Povinnost ctít barvu. Nemá-li hráč barvu, <em>musí dát trumf</em>. Do trumfů není nutné přebíjet (lze podnést nižším trumfem). Odhazovat libovolnou kartu lze jen při absenci nesené barvy i všech trumfů.</p>
+          <p class="text-stone-300">Zahajuje protihráč. Povinnost ctít barvu (bez nutnosti přebíjet). Nemá-li hráč nesenou barvu, musí hrát trumf. Do neseného trumfu musí dát trumf, ale nemusí přebíjet (smí podnést nižším trumfem). Odhoz libovolné karty je možný jen tehdy, nemá-li hráč nesenou barvu ani žádný trumf.</p>
         </section>
 
         <section>
-          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">10. Hospodský bankovní systém</h3>
-          <p class="text-stone-300">Volitel musí získat více bodů než soupeř, jinak spadnul a platí vklad do banku (20 Kč). 1. výhra = „Nový“, 2. výhra v řadě = „Nahoře“, 3. výhra v řadě = bere celý bank!</p>
+          <h3 class="font-bold text-amber-400 uppercase tracking-wider mb-0.5">10. Hospodský bankovní systém a vyhodnocení</h3>
+          <p class="text-stone-300">Volitel musí získat přísně více bodů než soupeř, jinak spadnul (platí 20 Kč do banku) a soupeř vítězí a postupuje v sérii („Nový“ → „Nahoře“ → „Bere celý bank“). <strong>Zproštění pokuty 20 Kč:</strong> Pokud obránce nahlásí při 1. štychu 100b hlášku (Kvintu nebo Čtveřici) a volitel položí karty před dohráním 1. štychu, volitel prohrává bez pokuty 20 Kč a obránce postupuje v sérii.</p>
         </section>
       </div>
     </div>
   </div>
 
-  <!-- Modál pro ladičku rozměrů a nastavení -->
+  <!-- Modál pro ladičku rozměrů, nastavení a stažení souboru do PC -->
   <div id="tunerModal" class="hidden absolute inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-stone-900 border border-stone-700 rounded-2xl max-w-xs w-full p-4 shadow-2xl space-y-3">
       <div class="flex items-center justify-between pb-1 border-b border-stone-800">
-        <div class="font-serif-title font-black text-amber-400 text-xs">Nastavení & Rozměry</div>
+        <div class="font-serif-title font-black text-amber-400 text-xs">Nastavení & Stažení</div>
         <button id="btnCloseTuner" class="text-stone-400 hover:text-white text-xs">✕</button>
       </div>
 
@@ -533,11 +628,19 @@
         </label>
         <input id="sliderTunerH" type="range" min="100" max="160" value="126" class="w-full accent-amber-500">
       </div>
+
+      <div class="pt-1 border-t border-stone-800">
+        <button id="btnDownloadHtmlModal" class="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-black py-2 rounded-xl text-xs transition shadow-lg active:scale-95">
+          💾 Stáhnout index.html do PC
+        </button>
+      </div>
     </div>
   </div>
 
   <script>
-    /* Zvukový subsystém */
+    /* ============================================================================
+     * ZVUKOVÝ SUBSYSTÉM (Web Audio API bez externích závislostí)
+     * ============================================================================ */
     let audioCtx = null;
     let isMuted = false;
 
@@ -607,7 +710,9 @@
       }
     };
 
-    /* Definice 32 jednohlavých mariášových karet */
+    /* ============================================================================
+     * DEFINICE 32 MARIÁŠOVÝCH KARET A BODOVÝCH HODNOT (Sekce 1 a 7)
+     * ============================================================================ */
     const SUITS = {
       CERVENE: { id: 'CERVENE', name: 'Červené', symbol: '♥', color: '#dc2626', prefix: 'c' },
       KULE:    { id: 'KULE',    name: 'Kule',    symbol: '🔔', color: '#d97706', prefix: 'k' },
@@ -616,21 +721,29 @@
     };
 
     const RANKS = [
-      { id: '7',  name: 'Sedma',  short: '7',  order: 1, fileRank: 'sedma' },
-      { id: '8',  name: 'Osma',   short: '8',  order: 2, fileRank: 'osma' },
-      { id: '9',  name: 'Devítka',short: '9',  order: 3, fileRank: 'devitka' },
-      { id: '10', name: 'Desítka',short: '10', order: 4, fileRank: 'desitka' },
-      { id: 'Sp', name: 'Spodek', short: 'Sp', order: 5, fileRank: 'spodek' },
-      { id: 'Sv', name: 'Svršek', short: 'Sv', order: 6, fileRank: 'svrsek' },
-      { id: 'K',  name: 'Král',   short: 'K',  order: 7, fileRank: 'kral' },
-      { id: 'E',  name: 'Eso',    short: 'E',  order: 8, fileRank: 'eso' }
+      { id: '7',  name: 'Sedma',   short: '7',  order: 1, fileRank: 'sedma' },
+      { id: '8',  name: 'Osma',    short: '8',  order: 2, fileRank: 'osma' },
+      { id: '9',  name: 'Devítka', short: '9',  order: 3, fileRank: 'devitka' },
+      { id: '10', name: 'Desítka', short: '10', order: 4, fileRank: 'desitka' },
+      { id: 'Sp', name: 'Spodek',  short: 'Sp', order: 5, fileRank: 'spodek' },
+      { id: 'Sv', name: 'Svršek',  short: 'Sv', order: 6, fileRank: 'svrsek' },
+      { id: 'K',  name: 'Král',    short: 'K',  order: 7, fileRank: 'kral' },
+      { id: 'E',  name: 'Eso',     short: 'E',  order: 8, fileRank: 'eso' }
     ];
 
-    function getCardPowerAndPoints(card, trumpSuit) {
-      const isTrump = card.suit === trumpSuit;
+    /**
+     * Vrací sílu (power 1..8) a bodovou hodnotu karty podle toho, zda jde o trumf.
+     * Zohledňuje také vynulování trumfového Svrška na 0 b při dokončení Bely.
+     */
+    function getCardPowerAndPoints(card, trumpSuit, ignoreBelaZeroing = false) {
+      if (!card) return { power: 0, points: 0 };
+      const isTrump = Boolean(trumpSuit && card.suit === trumpSuit);
       if (isTrump) {
         switch (card.rankId) {
-          case 'Sv': return { power: 8, points: 20 };
+          case 'Sv': {
+            const pts = (!ignoreBelaZeroing && State.trumpSvrsekZeroed) ? 0 : 20;
+            return { power: 8, points: pts };
+          }
           case '9':  return { power: 7, points: 14 };
           case 'E':  return { power: 6, points: 11 };
           case '10': return { power: 5, points: 10 };
@@ -654,14 +767,25 @@
       return { power: 0, points: 0 };
     }
 
+    /* ============================================================================
+     * STAV HRY (State)
+     * ============================================================================ */
     const State = {
-      phase: 'DEALING',
-      dealer: 'BOT',
-      activePlayer: 'USER',
+      hasDoneInitialCut: false,
+      phase: 'INITIAL_CUT', // 'INITIAL_CUT' | 'BIDDING_BOTTOM' | 'BIDDING_TOP' | 'PRE_TRICK_SIB' | 'DISCARDING_SIB' | 'PLAYING' | 'ROUND_OVER'
+      dealer: 'BOT',        // 'USER' | 'BOT'
+      activePlayer: 'USER', // 'USER' | 'BOT'
       activeTrumpSuit: null,
-      trumpChooser: null,
+      trumpChooser: null,   // 'USER' | 'BOT'
+      chosenTrumpPosition: null, // 'BOTTOM' | 'TOP'
+      bothTrumpsSameSuit: false,
       consecutiveDisagreements: 0,
-      
+
+      // Natočení trumfového balíčku (-75° až +75°) a posun pro 45–55% viditelnost spodní karty
+      trumpRotationDeg: 68,
+      trumpOffsetY: 30,
+      trumpOffsetX: 4,
+
       userHand: [],
       botHand: [],
       userDrawStack: [],
@@ -669,6 +793,14 @@
       bottomTrumpCard: null,
       topTrumpCard: null,
       remainingDeck: [],
+      // Po určení trumfu obsahuje trumpStack všechny lícem otočené karty v balíčku od vrchní (index 0) po spodní
+      trumpStack: [],
+
+      // Vícenásobné šíbování a odkládání přebytečných karet
+      userHasSibovano: false,
+      botHasSibovano: false,
+      discardNeededCount: 0,
+      resumeActionAfterDiscard: null,
 
       selectedCardId: null,
 
@@ -676,18 +808,35 @@
       trickPlays: [],
       isResolvingTrick: false,
 
+      // Hlášky (postupky a čtveřice) v 1. štychu
+      userTrick1Melds: [],
+      botTrick1Melds: [],
+      meldsResolvedInTrick1: false,
+      defenderHas100MeldAgainstUser: false,
+      defenderHas100MeldAgainstBot: false,
+      hundredMeldPromptShown: false,
+
+      // Bela (40 b) a Minda
+      userHasBelaRight: false,
+      botHasBelaRight: false,
+      userBelaStage: 0, // 0 = nic, 1 = ohlášena 1. karta, 2 = potvrzena 2. kartou (+40b)
+      botBelaStage: 0,
+      trumpSvrsekPlayedAndCounted20: false,
+      trumpSvrsekZeroed: false,
+      mindaAnnounced: false,
+
       userPoints: 0,
       botPoints: 0,
       userTricksWon: [],
       botTricksWon: [],
-      mindaAnnounced: false,
-      belaAnnounced: false,
 
+      // Hospodský bank a série („Nový“ -> „Nahoře“ -> „Bere celý bank“)
       bankAmount: 40,
       consecutiveWins: { player: null, count: 0 },
 
       showCardPoints: true,
-      cardImgBasePath: './'
+      cardImgBasePath: './',
+      htmlSourceSnapshot: ''
     };
 
     function getCardImagePath(card) {
@@ -698,12 +847,12 @@
     }
 
     function getStreakStatusText(player, count) {
-      if (!player || count === 0) return '1. hra';
+      if (!player || count === 0) return 'Nová série';
       const isUser = (player === 'USER' || player === 'Ty');
       if (count === 1) {
-        return isUser ? 'Ty jsi „Nový“' : 'Kuba je „Nový“';
+        return isUser ? 'Ty jsi „Nový“ (1/3)' : 'Kuba je „Nový“ (1/3)';
       } else if (count === 2) {
-        return isUser ? 'Ty jsi „Nahoře“' : 'Kuba je „Nahoře“';
+        return isUser ? 'Ty jsi „Nahoře“ (2/3)' : 'Kuba je „Nahoře“ (2/3)';
       } else {
         return isUser ? 'Bereš celý bank! 💰' : 'Kuba bere celý bank! 💰';
       }
@@ -730,7 +879,7 @@
       return deck;
     }
 
-    function logEvent(author, text, type = 'info') {
+    function logEvent(author, text) {
       const logBox = document.getElementById('logContainer');
       if (!logBox) return;
 
@@ -755,16 +904,92 @@
       logBox.scrollTop = logBox.scrollHeight;
     }
 
-    function showToast(text) {
+    function showToast(text, duration = 1800) {
       const toast = document.getElementById('toastAlert');
       if (!toast) return;
       toast.textContent = text;
       toast.classList.remove('hidden');
       setTimeout(() => {
         toast.classList.add('hidden');
-      }, 1600);
+      }, duration);
     }
 
+    /* ============================================================================
+     * ÚVODNÍ SEJMUTÍ KARTY PŘED 1. HROU (Sekce 2)
+     * ============================================================================ */
+    function showInitialCutDialog() {
+      State.phase = 'INITIAL_CUT';
+      const modal = document.getElementById('initialCutModal');
+      if (modal) modal.classList.remove('hidden');
+      updateUI();
+    }
+
+    function handleInitialCutAction() {
+      const btn = document.getElementById('btnPerformCut');
+      const cardsArea = document.getElementById('initialCutCardsArea');
+      const desc = document.getElementById('initialCutDesc');
+      const uSlot = document.getElementById('cutCardUserSlot');
+      const bSlot = document.getElementById('cutCardBotSlot');
+
+      if (!State.hasDoneInitialCut) {
+        const deck = createFreshDeck();
+        const userCut = deck[0];
+        // Zajistíme kartu s odlišnou nominální hodnotou, aby bylo sejmutí jednoznačné
+        const botCut = deck.find(c => c.order !== userCut.order) || deck[1];
+
+        State.hasDoneInitialCut = true;
+        Sound.card();
+
+        if (uSlot && bSlot && cardsArea) {
+          uSlot.innerHTML = '';
+          bSlot.innerHTML = '';
+          uSlot.appendChild(createCardElement(userCut, true, 'trump-card-size'));
+          bSlot.appendChild(createCardElement(botCut, true, 'trump-card-size'));
+          cardsArea.classList.remove('hidden');
+        }
+
+        // V método startNewRound() se State.dealer na začátku přepíná,
+        // proto nastavíme opačnou hodnotu, aby 1. kolo rozdával vítěz sejmutí.
+        if (userCut.order > botCut.order) {
+          State.dealer = 'BOT'; // startNewRound přepne na 'USER'
+          if (desc) {
+            desc.innerHTML = `Sejmul jsi vyšší kartu (<strong class="text-emerald-400">${userCut.rankName}</strong> vs. ${botCut.rankName}).<br><span class="text-amber-400 font-bold">V 1. hře jsi Rozdávající, Kuba je Protihráč!</span>`;
+          }
+          logEvent('Systém', `Sejmutí karty: Ty (${userCut.rankName}) > Kuba (${botCut.rankName}). První rozdává Ty!`);
+        } else {
+          State.dealer = 'USER'; // startNewRound přepne na 'BOT'
+          if (desc) {
+            desc.innerHTML = `Kuba sejmul vyšší kartu (<strong class="text-rose-400">${botCut.rankName}</strong> vs. ${userCut.rankName}).<br><span class="text-amber-400 font-bold">V 1. hře rozdává Kuba, ty jsi Protihráč!</span>`;
+          }
+          logEvent('Systém', `Sejmutí karty: Kuba (${botCut.rankName}) > Ty (${userCut.rankName}). První rozdává Kuba!`);
+        }
+
+        if (btn) {
+          btn.textContent = 'Rozdat 1. hru ▶';
+        }
+      } else {
+        const modal = document.getElementById('initialCutModal');
+        if (modal) modal.classList.add('hidden');
+        startNewRound();
+      }
+    }
+
+    /**
+     * Vygeneruje náhodný úhel pootočení v rozsahu -75° až +75° (s vyloučením příliš malých úhlů,
+     * aby byl balíček přirozeně napříč a spodní trumf zůstal viditelný ze 45 % až 55 %).
+     */
+    function generateRealisticTrumpDeckPlacement() {
+      const sign = Math.random() < 0.5 ? -1 : 1;
+      const absAngle = Math.floor(Math.random() * 41) + 35; // 35° až 75°
+      State.trumpRotationDeg = sign * absAngle;
+      // Posun 28 až 34 px z výšky 110 px nechává odkrytých přesně ~48–54 % spodního trumfu
+      State.trumpOffsetY = Math.floor(Math.random() * 7) + 28;
+      State.trumpOffsetX = Math.floor(Math.random() * 7) + 8;
+    }
+
+    /* ============================================================================
+     * ROZDÁVÁNÍ A VOLBA TRUMFU (Sekce 3, 4 a 6)
+     * ============================================================================ */
     function startNewRound() {
       State.dealer = State.dealer === 'USER' ? 'BOT' : 'USER';
       const isUserDealer = State.dealer === 'USER';
@@ -772,26 +997,55 @@
       State.phase = 'DEALING';
       State.activeTrumpSuit = null;
       State.trumpChooser = null;
+      State.chosenTrumpPosition = null;
+      State.bothTrumpsSameSuit = false;
+
       State.trickNumber = 1;
       State.trickPlays = [];
       State.isResolvingTrick = false;
       State.selectedCardId = null;
+
+      State.userHasSibovano = false;
+      State.botHasSibovano = false;
+      State.discardNeededCount = 0;
+      State.resumeActionAfterDiscard = null;
+
+      State.userTrick1Melds = [];
+      State.botTrick1Melds = [];
+      State.meldsResolvedInTrick1 = false;
+      State.defenderHas100MeldAgainstUser = false;
+      State.defenderHas100MeldAgainstBot = false;
+      State.hundredMeldPromptShown = false;
+
+      State.userHasBelaRight = false;
+      State.botHasBelaRight = false;
+      State.userBelaStage = 0;
+      State.botBelaStage = 0;
+      State.trumpSvrsekPlayedAndCounted20 = false;
+      State.trumpSvrsekZeroed = false;
+      State.mindaAnnounced = false;
+
       State.userPoints = 0;
       State.botPoints = 0;
       State.userTricksWon = [];
       State.botTricksWon = [];
-      State.mindaAnnounced = false;
-      State.belaAnnounced = false;
+
+      generateRealisticTrumpDeckPlacement();
 
       const deck = createFreshDeck();
 
+      // Postup rozdávání podle Sekce 3:
+      // 2x 3 karty (6 karet), spodní trumf, 3 karty na dobrání každému, vrchní trumf + lícem otočený zbytek balíčku
       const opponentCards = deck.slice(0, 6);
       const userCards = deck.slice(6, 12);
       State.bottomTrumpCard = deck[12];
       const opponentDraw = deck.slice(13, 16);
       const userDraw = deck.slice(16, 19);
       State.topTrumpCard = deck[19];
-      State.remainingDeck = deck.slice(20);
+      State.remainingDeck = deck.slice(20); // 12 karet lícem nahoru pod vrchním trumfem
+      State.trumpStack = [];
+
+      State.bothTrumpsSameSuit = (State.bottomTrumpCard.suit === State.topTrumpCard.suit);
 
       if (isUserDealer) {
         State.userHand = userCards;
@@ -805,26 +1059,46 @@
         State.botDrawStack = userDraw;
       }
 
-      logEvent('Systém', `Rozdáno. Rozdávající: ${isUserDealer ? 'Ty' : 'Kuba'}.`);
-      logEvent('Systém', `Spodní trumf: ${State.bottomTrumpCard.rankName} (${SUITS[State.bottomTrumpCard.suit].name}), Vrchní: ${State.topTrumpCard.rankName} (${SUITS[State.topTrumpCard.suit].name}).`);
+      sortHand(State.userHand);
+
+      logEvent('Systém', `Rozdáno (v ruce 6 karet, na stole 3 karty na dobrání). Rozdává: ${isUserDealer ? 'Ty' : 'Kuba'}.`);
+      logEvent('Systém', `1. Spodní trumf: ${State.bottomTrumpCard.rankName} (${SUITS[State.bottomTrumpCard.suit].name}) | 2. Vrchní trumf: ${State.topTrumpCard.rankName} (${SUITS[State.topTrumpCard.suit].name}).`);
 
       Sound.card();
       updateUI();
 
       State.phase = 'BIDDING_BOTTOM';
-      const firstChooser = isUserDealer ? 'BOT' : 'USER';
-      setTimeout(() => handleBiddingStep(firstChooser, 'BOTTOM'), 600);
+      const firstChooser = isUserDealer ? 'BOT' : 'USER'; // První volí vždy Protihráč
+      setTimeout(() => handleBiddingStep(firstChooser, 'BOTTOM'), 550);
     }
 
     function handleBiddingStep(player, phaseType) {
       const card = phaseType === 'BOTTOM' ? State.bottomTrumpCard : State.topTrumpCard;
       const suit = SUITS[card.suit];
+      const isUserDealer = State.dealer === 'USER';
+      const isForcedThirdDisagreement = (phaseType === 'TOP' && player === State.dealer && State.consecutiveDisagreements >= 2);
 
       if (player === 'USER') {
         const banner = document.getElementById('biddingBanner');
+        const subtitle = document.getElementById('biddingSubtitle');
         const text = document.getElementById('biddingText');
-        if (banner && text) {
-          text.innerHTML = `Chceš vzít <strong>${phaseType === 'BOTTOM' ? 'spodní' : 'vrchní'} trumf</strong>: <span class="text-amber-400 font-bold">${card.rankName} (${suit.name} ${suit.symbol})</span>?`;
+        const btnTake = document.getElementById('btnTakeTrump');
+        const btnPass = document.getElementById('btnPassTrump');
+
+        if (banner && text && btnTake && btnPass) {
+          if (isForcedThirdDisagreement) {
+            if (subtitle) subtitle.textContent = '⚠️ Hrozící 3. neshoda v řadě (Povinná volba)';
+            text.innerHTML = `Jako rozdávající se již nemůžeš vrátit ke spodnímu trumfu. Musíš buď vzít <strong>vrchní trumf</strong> (<span class="text-amber-400 font-bold">${card.rankName} – ${suit.name} ${suit.symbol}</span>), nebo hru vzdát (-20 Kč do banku)!`;
+            btnTake.textContent = '✅ Vzít vrchní trumf';
+            btnPass.textContent = '🏳️ Vzdát (-20 Kč)';
+            btnPass.className = 'flex-1 bg-rose-700 hover:bg-rose-600 text-white font-bold py-1.5 px-3 rounded-xl text-xs border border-rose-500 active:scale-95 transition';
+          } else {
+            if (subtitle) subtitle.textContent = `Volba trumfu (${phaseType === 'BOTTOM' ? '1. fáze – Spodní' : '2. fáze – Vrchní'})`;
+            text.innerHTML = `Chceš vzít <strong>${phaseType === 'BOTTOM' ? 'spodní' : 'vrchní'} trumf</strong>: <span class="text-amber-400 font-bold">${card.rankName} (${suit.name} ${suit.symbol})</span>?`;
+            btnTake.textContent = '✅ Beru';
+            btnPass.textContent = '❌ Neberu';
+            btnPass.className = 'flex-1 bg-stone-800 hover:bg-stone-700 text-stone-300 font-bold py-1.5 px-3 rounded-xl text-xs border border-stone-600 active:scale-95 transition';
+          }
           banner.classList.remove('hidden');
         }
       } else {
@@ -832,18 +1106,33 @@
         if (banner) banner.classList.add('hidden');
 
         setTimeout(() => {
-          const trumpCount = State.botHand.filter(c => c.suit === card.suit).length;
-          const hasBig = State.botHand.some(c => c.suit === card.suit && (c.rankId === 'Sv' || c.rankId === '9' || c.rankId === 'E'));
-          const accepts = trumpCount >= 3 || (trumpCount >= 2 && hasBig) || (phaseType === 'TOP' && Math.random() > 0.45);
+          const trumpCards = State.botHand.filter(c => c.suit === card.suit);
+          const trumpCount = trumpCards.length;
+          const hasBig = trumpCards.some(c => c.rankId === 'Sv' || c.rankId === '9' || c.rankId === 'E');
+
+          if (isForcedThirdDisagreement) {
+            // Rozdávající Kuba čelí 3. neshodě u horního trumfu: vezme ho, pokud má alespoň trochu hratelnou kartu, jinak vzdá
+            const shouldTakeForced = trumpCount >= 1 || card.rankId === 'Sv' || card.rankId === '9' || Math.random() > 0.35;
+            if (shouldTakeForced) {
+              logEvent('Kuba', `Při hrozící 3. neshodě beru povinně vrchní trumf (${suit.name})!`);
+              applyTrumpChoice('BOT', card.suit, 'TOP');
+            } else {
+              logEvent('Kuba', 'Vzdávám při 3. neshodě a platím 20 Kč do banku!');
+              handleThirdDisagreementSurrender('BOT');
+            }
+            return;
+          }
+
+          const accepts = trumpCount >= 3 || (trumpCount >= 2 && hasBig) || (phaseType === 'TOP' && trumpCount >= 2 && Math.random() > 0.35);
 
           if (accepts) {
             logEvent('Kuba', `Beru ${phaseType === 'BOTTOM' ? 'spodní' : 'vrchní'} trumf (${suit.name})!`);
-            applyTrumpChoice('BOT', card.suit);
+            applyTrumpChoice('BOT', card.suit, phaseType);
           } else {
             logEvent('Kuba', `Neberu ${phaseType === 'BOTTOM' ? 'spodní' : 'vrchní'} trumf.`);
             advanceBiddingAfterPass(player, phaseType);
           }
-        }, 850);
+        }, 750);
       }
     }
 
@@ -857,45 +1146,21 @@
           handleBiddingStep(dealer, 'BOTTOM');
         } else {
           State.phase = 'BIDDING_TOP';
-          logEvent('Systém', 'Spodní trumf odmítnut. Volí se vrchní trumf.');
+          logEvent('Systém', 'Spodní trumf odmítnut oběma hráči. Ke spodnímu se již nelze vrátit – volí se vrchní trumf.');
+          updateUI();
           handleBiddingStep(nonDealer, 'TOP');
         }
       } else {
         if (player === nonDealer) {
           handleBiddingStep(dealer, 'TOP');
         } else {
-          handleDisagreement();
+          // Pokud rozdávající odmítl horní trumf při 2 předchozích neshodách, vzdává hru (Sekce 6)
+          if (State.consecutiveDisagreements >= 2) {
+            handleThirdDisagreementSurrender(dealer);
+          } else {
+            handleDisagreement();
+          }
         }
-      }
-    }
-
-    function applyTrumpChoice(chooser, suit) {
-      const banner = document.getElementById('biddingBanner');
-      if (banner) banner.classList.add('hidden');
-
-      State.activeTrumpSuit = suit;
-      State.trumpChooser = chooser;
-      State.consecutiveDisagreements = 0;
-
-      State.userHand = [...State.userHand, ...State.userDrawStack];
-      State.botHand = [...State.botHand, ...State.botDrawStack];
-      State.userDrawStack = [];
-      State.botDrawStack = [];
-
-      sortHand(State.userHand);
-
-      logEvent('Systém', `Trumf zvolen: ${SUITS[suit].name} ${SUITS[suit].symbol}. Volitel: ${chooser === 'USER' ? 'Ty' : 'Kuba'}. Dobráno do 9 karet.`);
-
-      evaluateInitialMelds();
-      checkBotSibovani();
-
-      State.phase = 'PLAYING';
-      State.activePlayer = State.dealer === 'USER' ? 'BOT' : 'USER';
-
-      updateUI();
-
-      if (State.activePlayer === 'BOT') {
-        setTimeout(botPlayCard, 850);
       }
     }
 
@@ -904,14 +1169,101 @@
       if (banner) banner.classList.add('hidden');
 
       State.consecutiveDisagreements++;
-      logEvent('Systém', `Neshoda při volbě trumfu (${State.consecutiveDisagreements}. v řadě).`);
-
-      if (State.consecutiveDisagreements >= 3) {
-        logEvent('Systém', '3. neshoda v řadě! Rozdávající automaticky prohrává a platí vklad.');
-        State.bankAmount += 20;
-      }
+      logEvent('Systém', `Neshoda při volbě trumfu (${State.consecutiveDisagreements}. v řadě). Karty se skládají, rozdávání přechází na protihráče.`);
+      showToast(`Neshoda (${State.consecutiveDisagreements}/2)`);
+      updateUI();
 
       setTimeout(startNewRound, 1200);
+    }
+
+    /**
+     * Pravidlo třetí neshody (Sekce 6):
+     * Rozdávající vzdal hru u horního trumfu -> platí 20 Kč do banku,
+     * protihráč vyhrává a postupuje v bankovní sérii („Nový“ -> „Nahoře“ -> „Bere celý bank“).
+     */
+    function handleThirdDisagreementSurrender(surrenderingDealer) {
+      const banner = document.getElementById('biddingBanner');
+      if (banner) banner.classList.add('hidden');
+
+      State.phase = 'ROUND_OVER';
+      State.consecutiveDisagreements = 0;
+      State.bankAmount += 20;
+
+      const winner = surrenderingDealer === 'USER' ? 'BOT' : 'USER';
+      const loserName = surrenderingDealer === 'USER' ? 'Ty (rozdávající)' : 'Kuba (rozdávající)';
+      const winnerName = winner === 'USER' ? 'Ty (protihráč)' : 'Kuba (protihráč)';
+
+      const bankMsg = advanceStreakAndCheckBank(winner);
+
+      const roundResultMsg = `
+        ⚠️ <strong>3. neshoda v řadě:</strong> ${loserName} odmítl vrchní trumf a vzdal hru!<br>
+        Do banku přibývá <strong>20 Kč</strong>. Vítězí <strong>${winnerName}</strong>.<br>
+        ${bankMsg}
+      `;
+
+      logEvent('Systém', `3. neshoda: ${loserName} vzdal hru (+20 Kč do banku). Vyhrává ${winnerName}.`);
+      showRoundOverModal('Vzdání při 3. neshodě!', roundResultMsg);
+      updateUI();
+    }
+
+    /**
+     * Aplikuje volbu trumfu, přesune karty na balíčku podle Sekce 4 a rozdá každému 3 karty na dobrání (do 9 karet).
+     */
+    function applyTrumpChoice(chooser, suit, position) {
+      const banner = document.getElementById('biddingBanner');
+      if (banner) banner.classList.add('hidden');
+
+      State.activeTrumpSuit = suit;
+      State.trumpChooser = chooser;
+      State.chosenTrumpPosition = position; // 'BOTTOM' | 'TOP'
+      State.consecutiveDisagreements = 0;
+
+      // Manipulace s balíčkem dle Sekce 4:
+      // - Spodní trumf: přesune se nahoru na balíček (nad horní trumf a lícem otočený zbytek balíčku)
+      // - Horní trumf: spodní trumf se zasune dospodu pod balíček a nahoře zůstává vrchní trumf
+      if (position === 'BOTTOM') {
+        State.trumpStack = [State.bottomTrumpCard, State.topTrumpCard, ...State.remainingDeck];
+      } else {
+        State.trumpStack = [State.topTrumpCard, ...State.remainingDeck, State.bottomTrumpCard];
+      }
+
+      // Dobrání 3 karet ze stolu do 9 karet (Sekce 4)
+      State.userHand = [...State.userHand, ...State.userDrawStack];
+      State.botHand = [...State.botHand, ...State.botDrawStack];
+      State.userDrawStack = [];
+      State.botDrawStack = [];
+
+      sortHand(State.userHand);
+      sortHand(State.botHand);
+
+      const posText = position === 'BOTTOM'
+        ? '1. spodní trumf (přesunut nahoru na balíček)'
+        : '2. vrchní trumf (spodní trumf zasunut pod balíček)';
+
+      logEvent('Systém', `Zvolen ${posText}: ${SUITS[suit].name} ${SUITS[suit].symbol}. Volitel: ${chooser === 'USER' ? 'Ty' : 'Kuba'}. Oba hráči dobrali 3 karty ze stolu (mají 9 karet).`);
+
+      // Nejprve zkontrolujeme, zda chce Kuba šíbovat před 1. štychem
+      checkBotSibovani(true);
+
+      // Zkontrolujeme, zda má hráč (Ty) možnost šíbovat před 1. štychem a přitom vynáší Kuba
+      const firstLeader = State.dealer === 'USER' ? 'BOT' : 'USER';
+      State.activePlayer = firstLeader;
+
+      if (firstLeader === 'BOT' && canPlayerSibovat('USER')) {
+        State.phase = 'PRE_TRICK_SIB';
+        logEvent('Systém', 'Před 1. štychem můžeš vyšíbovat trumf (nebo pokračovat do hry).');
+        updateUI();
+      } else {
+        startTrick1Play();
+      }
+    }
+
+    function startTrick1Play() {
+      State.phase = 'PLAYING';
+      updateUI();
+      if (State.activePlayer === 'BOT') {
+        setTimeout(botPlayCard, 750);
+      }
     }
 
     function sortHand(hand) {
@@ -922,89 +1274,483 @@
       });
     }
 
-    function evaluateInitialMelds() {
-      const suitsMap = { CERVENE: [], KULE: [], ZELENE: [], ZALUDY: [] };
-      State.userHand.forEach(c => suitsMap[c.suit].push(c.order));
+    /* ============================================================================
+     * ŠÍBOVÁNÍ TRUMFOVOU SEDMIČKOU ČI OSMIČKOU A ODKLÁDÁNÍ KARET (Sekce 5)
+     * ============================================================================ */
+    function isBeforeFirstTrickPlayed(player) {
+      if (State.trickNumber !== 1) return false;
+      // Před odehráním 1. štychu (hráč ještě nevynesl kartu do 1. štychu)
+      return !State.trickPlays.some(p => p.player === player);
+    }
 
-      let userMeldPoints = 0;
-      Object.keys(suitsMap).forEach(s => {
-        const ords = [...new Set(suitsMap[s])].sort((a,b) => a-b);
-        let run = 1;
-        for (let i = 1; i < ords.length; i++) {
-          if (ords[i] === ords[i-1] + 1) {
-            run++;
-            if (run === 3) userMeldPoints = Math.max(userMeldPoints, 20);
-            if (run === 4) userMeldPoints = Math.max(userMeldPoints, 50);
-            if (run >= 5) userMeldPoints = Math.max(userMeldPoints, 100);
+    function isMultiSibAllowedNow(player) {
+      if (!isBeforeFirstTrickPlayed(player)) return false;
+      return (State.chosenTrumpPosition === 'TOP' || State.bothTrumpsSameSuit);
+    }
+
+    /**
+     * Zjistí, zda daný hráč ('USER' nebo 'BOT') může v této chvíli šíbovat.
+     * Vrací objekt { canSib: boolean, exchangeRankId: '7'|'8'|null, cardsToTakeCount: number }
+     */
+    function getSibovaniInfo(player) {
+      if (!State.activeTrumpSuit || State.trumpStack.length === 0) {
+        return { canSib: false, exchangeRankId: null, cardsToTakeCount: 0 };
+      }
+      const alreadySib = player === 'USER' ? State.userHasSibovano : State.botHasSibovano;
+      if (alreadySib) {
+        return { canSib: false, exchangeRankId: null, cardsToTakeCount: 0 };
+      }
+
+      const hand = player === 'USER' ? State.userHand : State.botHand;
+      const topDeckCard = State.trumpStack[0];
+      if (!topDeckCard || topDeckCard.suit !== State.activeTrumpSuit) {
+        return { canSib: false, exchangeRankId: null, cardsToTakeCount: 0 };
+      }
+
+      let exchangeRankId = null;
+      if (topDeckCard.rankId !== '7' && hand.some(c => c.suit === State.activeTrumpSuit && c.rankId === '7')) {
+        exchangeRankId = '7';
+      } else if (topDeckCard.rankId === '7' && hand.some(c => c.suit === State.activeTrumpSuit && c.rankId === '8')) {
+        exchangeRankId = '8';
+      }
+
+      if (!exchangeRankId) {
+        return { canSib: false, exchangeRankId: null, cardsToTakeCount: 0 };
+      }
+
+      // Spočítáme, kolik po sobě jdoucích trumfových karet leží na vrchu balíčku
+      let consecutiveTrumps = 1;
+      if (isMultiSibAllowedNow(player)) {
+        for (let i = 1; i < State.trumpStack.length; i++) {
+          if (State.trumpStack[i].suit === State.activeTrumpSuit) {
+            consecutiveTrumps++;
           } else {
-            run = 1;
+            break;
           }
         }
-      });
-
-      if (userMeldPoints > 0) {
-        State.userPoints += userMeldPoints;
-        logEvent('Ty', `Hláška na ruce: +${userMeldPoints} bodů!`, 'point');
-        showToast(`Hláška +${userMeldPoints}b!`);
       }
+
+      return {
+        canSib: true,
+        exchangeRankId,
+        cardsToTakeCount: consecutiveTrumps
+      };
     }
 
-    function checkBotSibovani() {
-      if (!State.activeTrumpSuit) return;
-      const hasSeven = State.botHand.some(c => c.suit === State.activeTrumpSuit && c.rankId === '7');
-      const trumpOnTable = (State.activeTrumpSuit === State.bottomTrumpCard.suit) ? State.bottomTrumpCard : State.topTrumpCard;
-      if (hasSeven && trumpOnTable && trumpOnTable.rankId !== '7') {
-        const sevenIdx = State.botHand.findIndex(c => c.suit === State.activeTrumpSuit && c.rankId === '7');
-        const sevenCard = State.botHand[sevenIdx];
-        State.botHand[sevenIdx] = trumpOnTable;
-        if (State.activeTrumpSuit === State.bottomTrumpCard.suit) {
-          State.bottomTrumpCard = sevenCard;
-        } else {
-          State.topTrumpCard = sevenCard;
-        }
-        logEvent('Kuba', 'Kuba vyšíboval trumf z balíčku!');
+    function canPlayerSibovat(player) {
+      if (player === 'USER') {
+        const validPhase = (State.phase === 'PRE_TRICK_SIB') ||
+                           (State.phase === 'PLAYING' && State.activePlayer === 'USER' && !State.isResolvingTrick);
+        if (!validPhase) return false;
       }
+      return getSibovaniInfo(player).canSib;
     }
 
+    /**
+     * Provede šíbování pro hráče ('USER').
+     * Pokud hráč při vícenásobném šíbování před 1. štychem odebere více než 1 trumfovou kartu,
+     * přejde hra do fáze 'DISCARDING_SIB', kde si hráč vybere přebytečné karty k odložení pod 7/8.
+     */
     function userSibovat() {
-      if (!State.activeTrumpSuit || State.phase !== 'PLAYING') return;
-      const sevenIdx = State.userHand.findIndex(c => c.suit === State.activeTrumpSuit && c.rankId === '7');
-      const trumpOnTable = (State.activeTrumpSuit === State.bottomTrumpCard.suit) ? State.bottomTrumpCard : State.topTrumpCard;
+      if (!canPlayerSibovat('USER')) return;
+      const info = getSibovaniInfo('USER');
+      if (!info.canSib) return;
 
-      if (sevenIdx !== -1 && trumpOnTable && trumpOnTable.rankId !== '7') {
-        const sevenCard = State.userHand[sevenIdx];
-        State.userHand[sevenIdx] = trumpOnTable;
-        if (State.activeTrumpSuit === State.bottomTrumpCard.suit) {
-          State.bottomTrumpCard = sevenCard;
+      const wasPreTrickPhase = (State.phase === 'PRE_TRICK_SIB');
+      const exIdx = State.userHand.findIndex(c => c.suit === State.activeTrumpSuit && c.rankId === info.exchangeRankId);
+      if (exIdx === -1) return;
+
+      const exchangeCard = State.userHand.splice(exIdx, 1)[0];
+      const takenCards = State.trumpStack.splice(0, info.cardsToTakeCount);
+      // Vložená 7 nebo 8 jde nahoru na balíček
+      State.trumpStack.unshift(exchangeCard);
+
+      State.userHand.push(...takenCards);
+      State.userHasSibovano = true;
+      State.selectedCardId = null;
+      sortHand(State.userHand);
+      Sound.card();
+
+      const takenNames = takenCards.map(c => c.rankName).join(', ');
+      if (takenCards.length === 1) {
+        logEvent('Ty', `Vyšíboval jsi trumf (${takenNames}) za trumfovou ${exchangeCard.rankName}! 🔄`);
+        showToast(`Vyšíbováno: ${takenNames}`);
+        if (wasPreTrickPhase) {
+          startTrick1Play();
         } else {
-          State.topTrumpCard = sevenCard;
+          updateUI();
         }
-        sortHand(State.userHand);
-        logEvent('Ty', 'Vyšíboval jsi trumf za sedmičku! 🔄');
-        Sound.card();
+      } else {
+        State.discardNeededCount = takenCards.length - 1;
+        State.phase = 'DISCARDING_SIB';
+        State.resumeActionAfterDiscard = wasPreTrickPhase ? 'START_TRICK_1' : 'CONTINUE_PLAYING';
+        logEvent('Ty', `Vícenásobné šíbování! Odebral jsi ${takenCards.length} trumfů (${takenNames}) za ${exchangeCard.rankName}. Nyní odlož ${State.discardNeededCount} libovolných karet z ruky pod ${exchangeCard.rankName}.`);
+        showToast(`Vyšíbováno ${takenCards.length} trumfů! Odlož ${State.discardNeededCount} karet.`);
         updateUI();
       }
     }
 
+    function handleDiscardCardForSib(card) {
+      if (State.phase !== 'DISCARDING_SIB' || State.discardNeededCount <= 0) return;
+
+      if (State.selectedCardId !== card.id) {
+        State.selectedCardId = card.id;
+        Sound.card();
+        updateUI();
+        return;
+      }
+
+      // Druhé klepnutí: odloží kartu z ruky do balíčku pod vloženou sedmičku/osmičku (na index 1 v trumpStack)
+      State.selectedCardId = null;
+      const idx = State.userHand.findIndex(c => c.id === card.id);
+      if (idx === -1) return;
+
+      const discarded = State.userHand.splice(idx, 1)[0];
+      State.trumpStack.splice(1, 0, discarded);
+      State.discardNeededCount--;
+      Sound.card();
+
+      logEvent('Ty', `Odložena karta pod trumf: ${discarded.rankName} (${SUITS[discarded.suit].name}).`);
+
+      if (State.discardNeededCount <= 0) {
+        sortHand(State.userHand);
+        logEvent('Systém', 'Šíbování a odložení karet dokončeno (v ruce máš 9 karet).');
+        const resume = State.resumeActionAfterDiscard;
+        State.resumeActionAfterDiscard = null;
+        if (resume === 'START_TRICK_1') {
+          startTrick1Play();
+        } else {
+          State.phase = 'PLAYING';
+          updateUI();
+        }
+      } else {
+        updateUI();
+      }
+    }
+
+    /**
+     * Logika šíbování pro bota (Kubu).
+     */
+    function checkBotSibovani(beforeTrick1 = false) {
+      const info = getSibovaniInfo('BOT');
+      if (!info.canSib) return;
+
+      // Pokud má Kuba 8 a nahoře leží 7, má smysl šíbovat jen tehdy, když pod 7 leží další trumf (cardsToTakeCount > 1)
+      if (info.exchangeRankId === '8' && info.cardsToTakeCount <= 1) {
+        return;
+      }
+
+      const exIdx = State.botHand.findIndex(c => c.suit === State.activeTrumpSuit && c.rankId === info.exchangeRankId);
+      if (exIdx === -1) return;
+
+      const exchangeCard = State.botHand.splice(exIdx, 1)[0];
+      const takenCards = State.trumpStack.splice(0, info.cardsToTakeCount);
+      State.trumpStack.unshift(exchangeCard);
+
+      State.botHand.push(...takenCards);
+      State.botHasSibovano = true;
+
+      if (takenCards.length > 1) {
+        const needToDiscard = takenCards.length - 1;
+        // Kuba odloží nejslabší netrumfové karty (nebo trumfovou 7, pokud šíboval osmičkou)
+        const candidates = [...State.botHand].sort((a, b) => {
+          const aIsTrump = a.suit === State.activeTrumpSuit;
+          const bIsTrump = b.suit === State.activeTrumpSuit;
+          if (a.rankId === '7' && aIsTrump) return -1;
+          if (b.rankId === '7' && bIsTrump) return 1;
+          if (aIsTrump !== bIsTrump) return aIsTrump ? 1 : -1;
+          return getCardPowerAndPoints(a, State.activeTrumpSuit).points - getCardPowerAndPoints(b, State.activeTrumpSuit).points;
+        });
+
+        const toDiscard = candidates.slice(0, needToDiscard);
+        toDiscard.forEach(dCard => {
+          const idx = State.botHand.findIndex(c => c.id === dCard.id);
+          if (idx !== -1) {
+            const removed = State.botHand.splice(idx, 1)[0];
+            State.trumpStack.splice(1, 0, removed);
+          }
+        });
+        logEvent('Kuba', `Kuba vyšíboval ${takenCards.length} trumfové karty za ${exchangeCard.rankName} a odložil ${needToDiscard} karty dospodu!`);
+      } else {
+        logEvent('Kuba', `Kuba vyšíboval trumf (${takenCards[0].rankName}) za trumfovou ${exchangeCard.rankName}! 🔄`);
+      }
+
+      sortHand(State.botHand);
+    }
+
+    /* ============================================================================
+     * HLÁŠKY: POSTUPKY, ČTVEŘICE A POROVNÁVÁNÍ BEZ VLIVU TRUMFŮ (Sekce 8)
+     * ============================================================================ */
+    /**
+     * Najde všechny platné postupky (tercie 20b, kvarta 50b, kvinta 100b)
+     * a čtveřice (100b pro 9, 10, Sp, Sv, K, E) v 9karetní ruce.
+     */
+    function findHandMelds(nineCardHand) {
+      const melds = [];
+
+      // 1. Postupky v jednotlivých barvách (7-8-9-10-Sp-Sv-K-E)
+      Object.keys(SUITS).forEach(suitKey => {
+        const suitCards = nineCardHand
+          .filter(c => c.suit === suitKey)
+          .sort((a, b) => a.order - b.order);
+
+        if (suitCards.length < 3) return;
+
+        let currentRun = [suitCards[0]];
+        for (let i = 1; i < suitCards.length; i++) {
+          if (suitCards[i].order === suitCards[i - 1].order + 1) {
+            currentRun.push(suitCards[i]);
+          } else {
+            if (currentRun.length >= 3) {
+              melds.push(buildSequenceMeldObj(currentRun, suitKey));
+            }
+            currentRun = [suitCards[i]];
+          }
+        }
+        if (currentRun.length >= 3) {
+          melds.push(buildSequenceMeldObj(currentRun, suitKey));
+        }
+      });
+
+      // 2. Čtveřice stejné hodnoty (platí pro 9, 10, Sp, Sv, K, E -> order >= 3)
+      const byRank = {};
+      nineCardHand.forEach(c => {
+        if (c.order >= 3) {
+          byRank[c.rankId] = (byRank[c.rankId] || []);
+          byRank[c.rankId].push(c);
+        }
+      });
+
+      Object.keys(byRank).forEach(rankId => {
+        if (byRank[rankId].length === 4) {
+          const sample = byRank[rankId][0];
+          melds.push({
+            type: 'CTVERICE',
+            points: 100,
+            topOrder: sample.order,
+            topRankName: sample.rankName,
+            label: `Čtveřice (${sample.rankName} – 100 b)`
+          });
+        }
+      });
+
+      // Seřadíme hlášky hráče od nejvyšší po nejnižší (1. body, 2. nominální výška nejvyšší karty)
+      melds.sort((a, b) => {
+        if (b.points !== a.points) return b.points - a.points;
+        return b.topOrder - a.topOrder;
+      });
+
+      return melds;
+    }
+
+    function buildSequenceMeldObj(runCards, suitKey) {
+      const len = runCards.length;
+      const topCard = runCards[len - 1];
+      const points = len >= 5 ? 100 : (len === 4 ? 50 : 20);
+      const name = len >= 5 ? 'Kvinta' : (len === 4 ? 'Kvarta' : 'Tercie');
+      return {
+        type: 'POSTUPKA',
+        points,
+        topOrder: topCard.order,
+        topRankName: topCard.rankName,
+        suit: suitKey,
+        label: `${name} do ${topCard.rankName} (${SUITS[suitKey].name} – ${points} b)`
+      };
+    }
+
+    /**
+     * Porovná hlášky Protihráče a Rozdávajícího přesně podle Sekce 8 (bez vlivu trumfů):
+     * 1. Vyšší bodová hodnota (100 > 50 > 20)
+     * 2. Vyšší nominální hodnota nejvyšší karty (9 < 10 < Sp < Sv < K < E)
+     * 3. Při naprosté shodě vyhrává Protihráč (vynáší a hlásí jako první).
+     */
+    function compareAndAwardTrick1Melds() {
+      if (State.meldsResolvedInTrick1) return;
+      State.meldsResolvedInTrick1 = true;
+
+      const uMelds = State.userTrick1Melds;
+      const bMelds = State.botTrick1Melds;
+
+      if (uMelds.length === 0 && bMelds.length === 0) return;
+
+      const protihrac = State.dealer === 'USER' ? 'BOT' : 'USER';
+      let winner = null;
+
+      if (uMelds.length > 0 && bMelds.length === 0) {
+        winner = 'USER';
+      } else if (bMelds.length > 0 && uMelds.length === 0) {
+        winner = 'BOT';
+      } else {
+        const bestU = uMelds[0];
+        const bestB = bMelds[0];
+
+        if (bestU.points !== bestB.points) {
+          winner = bestU.points > bestB.points ? 'USER' : 'BOT';
+        } else if (bestU.topOrder !== bestB.topOrder) {
+          winner = bestU.topOrder > bestB.topOrder ? 'USER' : 'BOT';
+        } else {
+          // Naprostá shoda bodů i nejvyšší karty -> vyhrává Protihráč (hlásil první)
+          winner = protihrac;
+        }
+      }
+
+      if (winner === 'USER') {
+        const totalPts = uMelds.reduce((sum, m) => sum + m.points, 0);
+        const desc = uMelds.map(m => m.label).join(' + ');
+        State.userPoints += totalPts;
+
+        if (bMelds.length > 0) {
+          logEvent('Systém', `Porovnání hlášek (bez vlivu trumfů): Tvá hláška (${uMelds[0].label}) přebíjí Kubovu (${bMelds[0].label}). Kubovy hlášky propadají (0 b).`);
+        }
+        logEvent('Ty', `Platí hláška: ${desc} → +${totalPts} bodů!`, 'point');
+        showToast(`Hláška Ty +${totalPts} b!`);
+
+        // Zkontrolujeme, zda má obránce (Ty) 100b hlášku proti voliteli (Kubovi)
+        if (State.trumpChooser === 'BOT' && uMelds.some(m => m.points === 100)) {
+          State.defenderHas100MeldAgainstBot = true;
+        }
+      } else {
+        const totalPts = bMelds.reduce((sum, m) => sum + m.points, 0);
+        const desc = bMelds.map(m => m.label).join(' + ');
+        State.botPoints += totalPts;
+
+        if (uMelds.length > 0) {
+          logEvent('Systém', `Porovnání hlášek (bez vlivu trumfů): Kubova hláška (${bMelds[0].label}) přebíjí tvou (${uMelds[0].label}). Tvé hlášky propadají (0 b).`);
+        }
+        logEvent('Kuba', `Platí hláška: ${desc} → +${totalPts} bodů!`, 'point');
+        showToast(`Hláška Kuba +${totalPts} b!`);
+
+        // Zkontrolujeme, zda má obránce (Kuba) 100b hlášku proti voliteli (Tobě)
+        if (State.trumpChooser === 'USER' && bMelds.some(m => m.points === 100)) {
+          State.defenderHas100MeldAgainstUser = true;
+        }
+      }
+    }
+
+    /**
+     * Při vynesení první karty hráče do 1. štychu zaznamená jeho 9karetní ruku
+     * pro hlášky (postupky, čtveřice) a nárok na Belu (trumfový K + Sv v ruce před 1. štychem).
+     */
+    function lockPlayerInitialHandAtTrick1(player,fullNineCardHand) {
+      const hasTrumpK = fullNineCardHand.some(c => c.suit === State.activeTrumpSuit && c.rankId === 'K');
+      const hasTrumpSv = fullNineCardHand.some(c => c.suit === State.activeTrumpSuit && c.rankId === 'Sv');
+      const melds = findHandMelds(fullNineCardHand);
+
+      if (player === 'USER') {
+        State.userHasBelaRight = (hasTrumpK && hasTrumpSv);
+        State.userTrick1Melds = melds;
+        if (melds.length > 0) {
+          logEvent('Ty', `Hlásím na ruce: ${melds.map(m => m.label).join(', ')}`);
+        }
+        // Pokud Protihráč (Kuba) nahlásil při 1. kartě 100b hlášku a ty (Volitel) ji nepřebíjíš:
+        if (State.trumpChooser === 'USER' && State.botTrick1Melds.some(m => m.points === 100)) {
+          const bestB = State.botTrick1Melds[0];
+          const bestU = melds[0];
+          if (!bestU || bestB.points > bestU.points || (bestB.points === bestU.points && bestB.topOrder >= bestU.topOrder)) {
+            State.defenderHas100MeldAgainstUser = true;
+          }
+        }
+      } else {
+        State.botHasBelaRight = (hasTrumpK && hasTrumpSv);
+        State.botTrick1Melds = melds;
+        if (melds.length > 0) {
+          logEvent('Kuba', `Hlásím na ruce: ${melds.map(m => m.label).join(', ')}`);
+          // Pokud je Kuba obránce (Protihráč) a hned při 1. kartě 1. štychu nahlásí 100b hlášku,
+          // zpřístupníme voliteli (Tobě) tlačítko pro položení karet bez pokuty 20 Kč!
+          if (State.trumpChooser === 'USER' && melds.some(m => m.points === 100)) {
+            State.defenderHas100MeldAgainstUser = true;
+          }
+        }
+      }
+    }
+
+    /* ============================================================================
+     * BELA (40 b, Svršek = 0 b po dokončení) A MINDA (Sekce 8)
+     * ============================================================================ */
+    function checkBelaAndMindaOnPlay(player, card) {
+      if (card.suit !== State.activeTrumpSuit) return;
+
+      const pName = player === 'USER' ? 'Ty' : 'Kuba';
+
+      // 1. Minda (trumfová devítka)
+      if (card.rankId === '9' && !State.mindaAnnounced) {
+        State.mindaAnnounced = true;
+        showToast(`MINDA! (${pName})`);
+        Sound.minda();
+        logEvent(pName, 'Minda! 🔥 (14 b)');
+      }
+
+      // 2. Dvoufázová Bela (pouze pokud měl hráč K + Sv v ruce před odehráním 1. štychu)
+      const hasRight = player === 'USER' ? State.userHasBelaRight : State.botHasBelaRight;
+      if (!hasRight) return;
+
+      if (card.rankId === 'K' || card.rankId === 'Sv') {
+        const currentStage = player === 'USER' ? State.userBelaStage : State.botBelaStage;
+        if (currentStage === 0) {
+          // 1. fáze Bely: ohlášení „Bela!“ (zatím +0 bodů; pokud je kartou Svršek, počítá se ve štychu prozatím za 20 b)
+          if (player === 'USER') State.userBelaStage = 1;
+          else State.botBelaStage = 1;
+
+          showToast(`BELA! (${pName})`);
+          logEvent(pName, `Bela! 👑 (ohlášena 1. karta – ${card.rankName}, body se připíší po dokončení druhou kartou)`);
+        } else if (currentStage === 1) {
+          // 2. fáze Bely: potvrzení druhou kartou -> +40 b za Belu a trumfový Svršek se vynuluje na 0 b!
+          if (player === 'USER') State.userBelaStage = 2;
+          else State.botBelaStage = 2;
+
+          State.trumpSvrsekZeroed = true;
+
+          // Pokud byl trumfový Svršek odehrán už v dřívějším štychu za 20 b, odečteme 20 b a přičteme 40 b (čistých +20 b).
+          // Pokud je druhou kartou právě trumfový Svršek, započítá se v tomto štychu rovnou za 0 b a přičteme +40 b.
+          const netAdded = State.trumpSvrsekPlayedAndCounted20 ? 20 : 40;
+          if (player === 'USER') State.userPoints += netAdded;
+          else State.botPoints += netAdded;
+
+          showToast(`BELA DOKONČENA! (+40 b, Svršek 0 b)`);
+          if (State.trumpSvrsekPlayedAndCounted20) {
+            logEvent(pName, 'Bela potvrzena! 👑 (+40 b za Belu, dříve odehraný trumfový Svršek vynulován z 20 b na 0 b → čistý přírůstek +20 b)');
+          } else {
+            logEvent(pName, 'Bela potvrzena! 👑 (+40 b za Belu, trumfový Svršek v tomto štychu platí za 0 b)');
+          }
+        }
+      }
+    }
+
+    /* ============================================================================
+     * PRAVIDLA SEHRÁVKY ŠTYCHŮ (Sekce 9)
+     * ============================================================================ */
     function isCardPlayable(card, hand, leadingCard, trumpSuit) {
       if (!leadingCard) return true;
 
+      // 1. Povinnost ctít barvu (do nesené barvy i do neseného trumfu; přebíjet vyšší kartou se nemusí)
       const hasLeadSuit = hand.some(c => c.suit === leadingCard.suit);
       if (hasLeadSuit) {
         return card.suit === leadingCard.suit;
       }
 
+      // 2. Povinnost trumfovat (pokud hráč nemá nesenou barvu, musí hrát trumf)
       const hasTrump = hand.some(c => c.suit === trumpSuit);
       if (hasTrump) {
         return card.suit === trumpSuit;
       }
 
+      // 3. Odhoz libovolné karty
       return true;
     }
 
     function handleCardTouchOrClick(card) {
+      if (State.phase === 'DISCARDING_SIB') {
+        handleDiscardCardForSib(card);
+        return;
+      }
+
+      if (State.phase === 'PRE_TRICK_SIB') {
+        showToast('Nejprve klikni na Šíbovat trumf nebo Hrát bez šíbování ▶');
+        return;
+      }
+
       if (State.phase !== 'PLAYING' || State.activePlayer !== 'USER' || State.isResolvingTrick) return;
-      
+
       const leadingCard = State.trickPlays.length > 0 ? State.trickPlays[0].card : null;
       if (!isCardPlayable(card, State.userHand, leadingCard, State.activeTrumpSuit)) return;
 
@@ -1022,41 +1768,42 @@
     function playPlayerCard(card) {
       if (State.phase !== 'PLAYING' || State.activePlayer !== 'USER' || State.isResolvingTrick) return;
 
-      if (card.suit === State.activeTrumpSuit) {
-        if (card.rankId === '9' && !State.mindaAnnounced) {
-          State.mindaAnnounced = true;
-          showToast('MINDA! (14b)');
-          Sound.minda();
-          logEvent('Ty', 'Minda! 🔥', 'chat');
-        }
-        if ((card.rankId === 'K' || card.rankId === 'Sv') && !State.belaAnnounced) {
-          const hasPartner = State.userHand.some(c => c.suit === State.activeTrumpSuit && (c.rankId === 'K' || c.rankId === 'Sv') && c.id !== card.id);
-          if (hasPartner) {
-            State.belaAnnounced = true;
-            State.userPoints += 40;
-            showToast('BÉLA! (40b)');
-            logEvent('Ty', 'Béla! 👑 (+40b)', 'point');
-          }
-        }
+      // Při vynesení karty do 1. štychu uzamkneme 9karetní ruku pro hlášky a Belu
+      if (State.trickNumber === 1) {
+        lockPlayerInitialHandAtTrick1('USER', [...State.userHand]);
       }
+
+      checkBelaAndMindaOnPlay('USER', card);
 
       Sound.card();
       State.userHand = State.userHand.filter(c => c.id !== card.id);
       State.trickPlays.push({ player: 'USER', card });
 
+      // Pokud jsou v 1. štychu na stole obě karty, vyhodnotíme a porovnáme hlášky
+      if (State.trickNumber === 1 && State.trickPlays.length === 2) {
+        compareAndAwardTrick1Melds();
+      }
+
       updateUI();
 
       if (State.trickPlays.length === 2) {
-        resolveTrick();
+        maybePrompt100MeldFoldBeforeResolveTrick();
       } else {
         State.activePlayer = 'BOT';
         updateUI();
-        setTimeout(botPlayCard, 800);
+        setTimeout(botPlayCard, 750);
       }
     }
 
     function botPlayCard() {
       if (State.phase !== 'PLAYING' || State.activePlayer !== 'BOT' || State.isResolvingTrick) return;
+
+      // Kuba může šíbovat, když je na tahu
+      checkBotSibovani(State.trickNumber === 1);
+
+      if (State.trickNumber === 1) {
+        lockPlayerInitialHandAtTrick1('BOT', [...State.botHand]);
+      }
 
       const leadingCard = State.trickPlays.length > 0 ? State.trickPlays[0].card : null;
       const validCards = State.botHand.filter(c => isCardPlayable(c, State.botHand, leadingCard, State.activeTrumpSuit));
@@ -1068,61 +1815,112 @@
         const winningCards = validCards.filter(c => {
           const { power } = getCardPowerAndPoints(c, State.activeTrumpSuit);
           if (c.suit === leadingCard.suit) return power > leadPower;
-          if (c.suit === State.activeTrumpSuit) return true;
+          if (c.suit === State.activeTrumpSuit && leadingCard.suit !== State.activeTrumpSuit) return true;
           return false;
         });
 
         if (winningCards.length > 0) {
-          winningCards.sort((a,b) => getCardPowerAndPoints(a, State.activeTrumpSuit).power - getCardPowerAndPoints(b, State.activeTrumpSuit).power);
+          winningCards.sort((a, b) => getCardPowerAndPoints(a, State.activeTrumpSuit).power - getCardPowerAndPoints(b, State.activeTrumpSuit).power);
           chosen = winningCards[0];
         } else {
-          validCards.sort((a,b) => getCardPowerAndPoints(a, State.activeTrumpSuit).points - getCardPowerAndPoints(b, State.activeTrumpSuit).points);
+          validCards.sort((a, b) => getCardPowerAndPoints(a, State.activeTrumpSuit).points - getCardPowerAndPoints(b, State.activeTrumpSuit).points);
           chosen = validCards[0];
         }
       } else {
-        const aces = validCards.filter(c => c.rankId === 'E');
-        chosen = aces.length > 0 ? aces[0] : validCards[Math.floor(Math.random() * validCards.length)];
+        const nonTrumpAces = validCards.filter(c => c.rankId === 'E' && c.suit !== State.activeTrumpSuit);
+        chosen = nonTrumpAces.length > 0 ? nonTrumpAces[0] : validCards[Math.floor(Math.random() * validCards.length)];
       }
 
-      if (chosen.suit === State.activeTrumpSuit) {
-        if (chosen.rankId === '9') {
-          showToast('MINDA! (Kuba)');
-          logEvent('Kuba', 'Minda! 🔥', 'chat');
-        }
-        if ((chosen.rankId === 'K' || chosen.rankId === 'Sv') && !State.belaAnnounced) {
-          const hasPartner = State.botHand.some(c => c.suit === State.activeTrumpSuit && (c.rankId === 'K' || c.rankId === 'Sv') && c.id !== chosen.id);
-          if (hasPartner) {
-            State.belaAnnounced = true;
-            State.botPoints += 40;
-            showToast('BÉLA! (Kuba +40b)');
-            logEvent('Kuba', 'Béla! 👑 (+40b)', 'point');
-          }
-        }
-      }
+      checkBelaAndMindaOnPlay('BOT', chosen);
 
       Sound.card();
       State.botHand = State.botHand.filter(c => c.id !== chosen.id);
       State.trickPlays.push({ player: 'BOT', card: chosen });
       logEvent('Kuba', `Hraje: ${chosen.rankName} (${SUITS[chosen.suit].name})`);
 
+      if (State.trickNumber === 1 && State.trickPlays.length === 2) {
+        compareAndAwardTrick1Melds();
+      }
+
       updateUI();
 
       if (State.trickPlays.length === 2) {
-        resolveTrick();
+        maybePrompt100MeldFoldBeforeResolveTrick();
       } else {
         State.activePlayer = 'USER';
         updateUI();
       }
     }
 
+    /**
+     * Zkontroluje před dohráním 1. štychu, zda obránce nahlásil platnou 100bodovou hlášku (Kvintu nebo Čtveřici).
+     * Pokud je volitelem Ty, zobrazí dialog s možností položit karty bez pokuty 20 Kč.
+     * Pokud je volitelem Kuba a Ty jsi nahlásil 100b hlášku, Kuba vyhodnotí, zda karty rovnou položí.
+     */
+    function maybePrompt100MeldFoldBeforeResolveTrick() {
+      if (State.trickNumber === 1 && !State.hundredMeldPromptShown) {
+        if (State.defenderHas100MeldAgainstUser && State.trumpChooser === 'USER') {
+          State.hundredMeldPromptShown = true;
+          const modal = document.getElementById('hundredMeldFoldModal');
+          if (modal) modal.classList.remove('hidden');
+          return;
+        }
+        if (State.defenderHas100MeldAgainstBot && State.trumpChooser === 'BOT') {
+          State.hundredMeldPromptShown = true;
+          // Kuba jako volitel čelí tvé 100b hlášce -> položí karty před dohráním 1. štychu, aby ušetřil 20 Kč
+          setTimeout(() => {
+            handleFoldOn100Meld('BOT');
+          }, 700);
+          return;
+        }
+      }
+      resolveTrick();
+    }
+
+    /**
+     * Volitel položil karty před dohráním 1. štychu při 100b hlášce obránce (Sekce 10):
+     * Hra okamžitě končí, volitel prohrál BEZ pokuty 20 Kč do banku, obránce vyhrává a postupuje v sérii!
+     */
+    function handleFoldOn100Meld(foldingChooser) {
+      const foldModal = document.getElementById('hundredMeldFoldModal');
+      if (foldModal) foldModal.classList.add('hidden');
+
+      State.phase = 'ROUND_OVER';
+      State.isResolvingTrick = false;
+
+      const winner = foldingChooser === 'USER' ? 'BOT' : 'USER';
+      const folderName = foldingChooser === 'USER' ? 'Ty (volitel)' : 'Kuba (volitel)';
+      const winnerName = winner === 'USER' ? 'Ty (obránce se 100b hláškou)' : 'Kuba (obránce se 100b hláškou)';
+
+      const bankMsg = advanceStreakAndCheckBank(winner);
+
+      const roundResultMsg = `
+        🏳️ <strong>Položení karet při 100b hlášce soupeře:</strong><br>
+        ${folderName} položil karty před dohráním 1. štychu a je <strong>zproštěn pokuty 20 Kč do banku</strong>.<br>
+        Vítězí <strong>${winnerName}</strong>!<br>
+        ${bankMsg}
+      `;
+
+      logEvent('Systém', `${folderName} položil karty před dohráním 1. štychu při 100b hlášce soupeře (bez pokuty 20 Kč). Vyhrává ${winnerName}!`);
+      showRoundOverModal('Hra položena při 100b hlášce!', roundResultMsg);
+      updateUI();
+    }
+
     function resolveTrick() {
       if (State.trickPlays.length < 2) return;
       State.isResolvingTrick = true;
+      updateUI();
 
       const [play1, play2] = State.trickPlays;
       const { power: p1Power, points: p1Pts } = getCardPowerAndPoints(play1.card, State.activeTrumpSuit);
       const { power: p2Power, points: p2Pts } = getCardPowerAndPoints(play2.card, State.activeTrumpSuit);
       const trickPoints = p1Pts + p2Pts + (State.trickNumber === 9 ? 10 : 0);
+
+      // Zaznamenáme, zda byl v tomto štychu odehrán trumfový Svršek za 20 b (před dokončením Bely)
+      if ((play1.card.suit === State.activeTrumpSuit && play1.card.rankId === 'Sv' && p1Pts === 20) ||
+          (play2.card.suit === State.activeTrumpSuit && play2.card.rankId === 'Sv' && p2Pts === 20)) {
+        State.trumpSvrsekPlayedAndCounted20 = true;
+      }
 
       let winner = play1.player;
       if (play1.card.suit === play2.card.suit) {
@@ -1146,13 +1944,13 @@
           State.userPoints += trickPoints;
           State.userTricksWon.push([play1.card, play2.card]);
           State.activePlayer = 'USER';
-          logEvent('Ty', `Bereš štych #${State.trickNumber} (+${trickPoints} b)!`, 'point');
+          logEvent('Ty', `Bereš štych #${State.trickNumber} (+${trickPoints} b)!`);
           Sound.win();
         } else {
           State.botPoints += trickPoints;
           State.botTricksWon.push([play1.card, play2.card]);
           State.activePlayer = 'BOT';
-          logEvent('Kuba', `Bere štych #${State.trickNumber} (+${trickPoints} b).`, 'point');
+          logEvent('Kuba', `Bere štych #${State.trickNumber} (+${trickPoints} b).`);
         }
 
         const slot1 = document.getElementById('trickSlotFirst');
@@ -1181,59 +1979,90 @@
       }, 3000);
     }
 
+    /**
+     * Posune vítěze ('USER' nebo 'BOT') v bankovní sérii („Nový“ -> „Nahoře“ -> „Bere celý bank“)
+     * a zároveň vynuluje sérii poraženého (Sekce 10).
+     */
+    function advanceStreakAndCheckBank(winnerCode) {
+      const winnerLabel = winnerCode === 'USER' ? 'Ty' : 'Kuba';
+
+      if (State.consecutiveWins.player === winnerCode) {
+        State.consecutiveWins.count++;
+      } else {
+        State.consecutiveWins = { player: winnerCode, count: 1 };
+      }
+
+      const statusText = getStreakStatusText(State.consecutiveWins.player, State.consecutiveWins.count);
+
+      if (State.consecutiveWins.count >= 3) {
+        const wonPot = State.bankAmount;
+        State.bankAmount = 40;
+        State.consecutiveWins = { player: null, count: 0 };
+        logEvent('Systém', `🎉 ${winnerLabel} vyhrál 3× v řadě a BERE CELÝ BANK (${wonPot} Kč)! Oba hráči vkládají nový základní vklad (40 Kč).`);
+        return `<span class="text-amber-400 font-extrabold">🎉 ${winnerLabel} dosáhl 3 výher v řadě a BERE CELÝ BANK (${wonPot} Kč)!</span><br><span class="text-stone-400 text-[9px]">Nový základní vklad do banku: 40 Kč.</span>`;
+      }
+
+      return `<span class="text-amber-400 font-bold">Postup v sérii: ${statusText}</span>`;
+    }
+
+    function showRoundOverModal(titleText, bodyHtml) {
+      const modal = document.getElementById('roundOverModal');
+      const title = document.getElementById('roundSummaryTitle');
+      const sumText = document.getElementById('roundSummaryText');
+      if (title) title.textContent = titleText;
+      if (sumText) sumText.innerHTML = bodyHtml;
+      if (modal) modal.classList.remove('hidden');
+    }
+
     function finishRound() {
       State.phase = 'ROUND_OVER';
       const uScore = State.userPoints;
       const bScore = State.botPoints;
       const chooser = State.trumpChooser;
+      const defender = chooser === 'USER' ? 'BOT' : 'USER';
 
-      let chooserWon = false;
-      if (chooser === 'USER') chooserWon = uScore > bScore;
-      else chooserWon = bScore > uScore;
+      const chooserScore = chooser === 'USER' ? uScore : bScore;
+      const defenderScore = chooser === 'USER' ? bScore : uScore;
+      const chooserWon = chooserScore > defenderScore;
 
       let roundResultMsg = '';
       if (chooserWon) {
-        const winner = chooser === 'USER' ? 'Ty' : 'Kuba';
-        if (State.consecutiveWins.player === winner) {
-          State.consecutiveWins.count++;
-        } else {
-          State.consecutiveWins = { player: winner, count: 1 };
-        }
-
-        const streakStatus = getStreakStatusText(winner, State.consecutiveWins.count);
-        roundResultMsg = `Volitel <strong>${winner}</strong> splnil závazek a vyhrál (${chooser === 'USER' ? uScore : bScore} vs ${chooser === 'USER' ? bScore : uScore} b)!<br><span class="text-amber-400 font-bold">${streakStatus}</span>`;
-      } else {
-        const fell = chooser === 'USER' ? 'Ty' : 'Kuba';
-        State.bankAmount += 20;
-        roundResultMsg = `⚠️ Volitel <strong>${fell} spadl do banku</strong>! Neuhrál více bodů. Do banku přibývá 20 Kč (Celkem ${State.bankAmount} Kč).`;
-        State.consecutiveWins = { player: null, count: 0 };
-      }
-
-      if (State.consecutiveWins.count >= 3) {
-        roundResultMsg += `<br><br>🎉 <strong>${State.consecutiveWins.player} bere celý bank (${State.bankAmount} Kč) po 3 výhrách v řadě!</strong>`;
-        State.bankAmount = 40;
-        State.consecutiveWins = { player: null, count: 0 };
-      }
-
-      const modal = document.getElementById('roundOverModal');
-      const sumText = document.getElementById('roundSummaryText');
-      if (modal && sumText) {
-        sumText.innerHTML = `
-          <div class="mb-1 font-bold text-amber-400">Výsledek: Ty ${uScore} b | Kuba ${bScore} b</div>
-          <div>${roundResultMsg}</div>
+        const winnerName = chooser === 'USER' ? 'Ty' : 'Kuba';
+        const bankMsg = advanceStreakAndCheckBank(chooser);
+        roundResultMsg = `
+          Volitel <strong>${winnerName}</strong> splnil závazek a vyhrál (${chooserScore} : ${defenderScore} b)!<br>
+          ${bankMsg}
         `;
-        modal.classList.remove('hidden');
+      } else {
+        const fellName = chooser === 'USER' ? 'Ty' : 'Kuba';
+        const defName = defender === 'USER' ? 'Ty' : 'Kuba';
+        State.bankAmount += 20;
+        const bankMsg = advanceStreakAndCheckBank(defender);
+        roundResultMsg = `
+          ⚠️ Volitel <strong>${fellName} spadl do banku</strong> (${chooserScore} : ${defenderScore} b)!<br>
+          Do banku přihazuje <strong>20 Kč</strong> (v banku je <strong>${State.bankAmount} Kč</strong>).<br>
+          Vítězí obránce <strong>${defName}</strong>!<br>
+          ${bankMsg}
+        `;
       }
 
+      const fullHtml = `
+        <div class="mb-1 font-bold text-amber-400">Body: Ty ${uScore} b | Kuba ${bScore} b</div>
+        <div>${roundResultMsg}</div>
+      `;
+
+      showRoundOverModal('Kolo skončilo!', fullHtml);
       updateUI();
     }
 
-    /* Vykreslení karty */
+    /* ============================================================================
+     * VYKRESLOVÁNÍ KARET A STOLU
+     * ============================================================================ */
     function createCardElement(card, isFaceUp = true, customClasses = '') {
       const el = document.createElement('div');
       el.className = `marias-card ${customClasses}`;
 
-      if (!isFaceUp) {
+      if (!isFaceUp || !card) {
         el.classList.add('card-back');
         return el;
       }
@@ -1248,7 +2077,7 @@
              class="w-full h-full object-fill rounded-[7px] pointer-events-none select-none block"
              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
 
-        <!-- Fallback pokud chybí obrázek -->
+        <!-- Vektorový fallback pokud lokální obrázek karty není nalezen -->
         <div class="hidden absolute inset-0 flex flex-col justify-between p-1 bg-[#fffdfa] select-none pointer-events-none">
           <div class="flex justify-between items-center px-1 pt-0.5">
             <div class="flex items-center gap-0.5 leading-none">
@@ -1277,13 +2106,19 @@
       const total = State.userHand.length;
       if (total === 0) return;
 
-      const spreadStep = total > 7 ? 46 : (total > 5 ? 54 : 62);
+      const spreadStep = total > 9 ? 38 : (total > 7 ? 46 : (total > 5 ? 54 : 62));
       const centerIdx = (total - 1) / 2;
       const leadingCard = State.trickPlays.length > 0 ? State.trickPlays[0].card : null;
 
       State.userHand.forEach((card, idx) => {
-        const isPlayable = (State.phase === 'PLAYING') && !State.isResolvingTrick && isCardPlayable(card, State.userHand, leadingCard, State.activeTrumpSuit);
-        const cardClass = isPlayable ? 'playable' : (State.phase === 'PLAYING' ? 'unplayable' : '');
+        let cardClass = '';
+        if (State.phase === 'DISCARDING_SIB') {
+          cardClass = 'discard-selectable';
+        } else if (State.phase === 'PLAYING') {
+          const isPlayable = !State.isResolvingTrick && State.activePlayer === 'USER' &&
+                             isCardPlayable(card, State.userHand, leadingCard, State.activeTrumpSuit);
+          cardClass = isPlayable ? 'playable' : (State.activePlayer === 'USER' ? 'unplayable' : '');
+        }
 
         const slot = document.createElement('div');
         slot.className = 'card-slot';
@@ -1292,8 +2127,8 @@
         }
 
         const offset = (idx - centerIdx) * spreadStep;
-        const rot = (idx - centerIdx) * 1.5;
-        const yOffset = Math.abs(idx - centerIdx) * 1.2;
+        const rot = (idx - centerIdx) * 1.4;
+        const yOffset = Math.abs(idx - centerIdx) * 1.1;
 
         slot.style.transform = `translateX(${offset}px) translateY(${yOffset}px) rotate(${rot}deg)`;
         slot.style.zIndex = idx + 10;
@@ -1319,6 +2154,36 @@
         cardBack.className = 'w-[25px] h-[36px] card-back shrink-0 transition-transform';
         container.appendChild(cardBack);
       }
+
+      // Zobrazení 3 zakrytých karet na dobrání během volby trumfu (Sekce 3 a 4)
+      const uDraw = document.getElementById('userDrawStackContainer');
+      const bDraw = document.getElementById('botDrawStackContainer');
+      const hasDrawCardsOnTable = State.userDrawStack.length > 0;
+      if (uDraw) uDraw.classList.toggle('hidden', !hasDrawCardsOnTable);
+      if (bDraw) bDraw.classList.toggle('hidden', !hasDrawCardsOnTable);
+    }
+
+    function renderTrumpCardFaceHtml(card, labelText, labelStyleClass) {
+      const { points } = getCardPowerAndPoints(card, card.suit, true);
+      const showPts = State.showCardPoints && points > 0;
+      const imgUrl = getCardImagePath(card);
+      const suit = SUITS[card.suit];
+
+      return `
+        <img src="${imgUrl}" alt="${card.rankName}" class="w-full h-full object-fill rounded-[7px] pointer-events-none select-none block"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+        <div class="hidden absolute inset-0 flex flex-col justify-between p-1 bg-[#fffdfa]">
+          <div class="flex items-center gap-0.5 leading-none">
+            <span class="font-black text-sm" style="color: ${suit.color}">${card.rankShort}</span>
+            <span class="text-sm" style="color: ${suit.color}">${suit.symbol}</span>
+          </div>
+          <div class="text-center font-serif-title font-bold text-[9px] text-stone-600 pb-0.5">${card.rankName}</div>
+        </div>
+        <div class="absolute bottom-1 right-1 text-[7px] ${labelStyleClass} rounded px-1 font-extrabold py-0.5 shadow z-10">
+          ${labelText}
+        </div>
+        ${showPts ? `<div class="absolute bottom-1 left-1 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow pointer-events-none z-10">${points}b</div>` : ''}
+      `;
     }
 
     function renderTrumpDeck() {
@@ -1326,7 +2191,9 @@
       const topEl = document.getElementById('topTrumpCard');
       const bottomWrap = document.getElementById('bottomTrumpWrapper');
       const topWrap = document.getElementById('topTrumpWrapper');
+      const stackVisual = document.getElementById('faceUpDeckStackVisual');
       const talonArea = document.getElementById('trumpDeckArea');
+      const deckCountLbl = document.getElementById('deckCountLabel');
       if (!bottomEl || !topEl || !talonArea) return;
 
       if (!State.bottomTrumpCard || !State.topTrumpCard) {
@@ -1335,100 +2202,100 @@
       }
       talonArea.classList.remove('opacity-40');
 
-      if (State.phase === 'PLAYING' || State.phase === 'ROUND_OVER') {
-        const chosenCard = (State.activeTrumpSuit === State.bottomTrumpCard.suit) ? State.bottomTrumpCard : State.topTrumpCard;
-        const { points: cPts } = getCardPowerAndPoints(chosenCard, chosenCard.suit);
-        const showPts = State.showCardPoints && cPts > 0;
-        const imgUrl = getCardImagePath(chosenCard);
-        const cSuit = SUITS[chosenCard.suit];
+      const totalFaceUpCount = State.trumpStack.length > 0 ? State.trumpStack.length : (State.remainingDeck.length + 2);
+      if (deckCountLbl) deckCountLbl.textContent = totalFaceUpCount;
 
-        if (topWrap) topWrap.style.display = 'none';
-        if (bottomWrap) {
-          bottomWrap.style.display = 'block';
-          bottomWrap.style.transform = 'rotate(0deg)';
-          bottomWrap.style.top = '6px';
-          bottomWrap.style.left = '4px';
+      // Vykreslení vrstvy lícem otočeného zbytku balíčku pod vrchním trumfem
+      if (stackVisual) {
+        const previewCard = State.trumpStack.length > 1 ? State.trumpStack[1] : State.remainingDeck[0];
+        if (previewCard) {
+          stackVisual.style.transform = `rotate(${State.trumpRotationDeg - 4}deg) translate(3px, 4px)`;
+          stackVisual.innerHTML = `<div class="marias-card trump-card-size opacity-75 border border-stone-400">${renderTrumpCardFaceHtml(previewCard, 'BALÍČEK ↑', 'bg-stone-800/90 text-stone-200')}</div>`;
+        } else {
+          stackVisual.innerHTML = '';
         }
+      }
 
-        bottomEl.className = 'marias-card trump-card-size flex flex-col justify-between p-0 border border-amber-500/50 shadow-xl';
-        bottomEl.innerHTML = `
-          <img src="${imgUrl}" alt="${chosenCard.rankName}" class="w-full h-full object-fill rounded-[7px] pointer-events-none select-none block"
-               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-          <div class="hidden absolute inset-0 flex flex-col justify-between p-1 bg-[#fffdfa]">
-            <div class="flex items-center gap-0.5 leading-none">
-              <span class="font-black text-sm" style="color: ${cSuit.color}">${chosenCard.rankShort}</span>
-              <span class="text-sm" style="color: ${cSuit.color}">${cSuit.symbol}</span>
-            </div>
-            <div class="text-center font-serif-title font-bold text-[9px] text-stone-600 pb-0.5">${chosenCard.rankName}</div>
-          </div>
-          <div class="absolute bottom-1 right-1 text-[7px] bg-amber-400 rounded px-1 font-black text-stone-950 py-0.5 shadow z-10">
-            TRUMF
-          </div>
-          ${showPts ? `<div class="absolute bottom-1 left-1 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow pointer-events-none z-10">${cPts}b</div>` : ''}
-        `;
+      if (State.activeTrumpSuit && State.trumpStack.length > 0) {
+        const activeTopCard = State.trumpStack[0];
+        const underCard = State.trumpStack[1] || State.bottomTrumpCard;
+
+        if (State.chosenTrumpPosition === 'BOTTOM') {
+          // Zvolen spodní trumf -> přesunul se nahoru na balíček (nad pootočený vrchní trumf)
+          if (topWrap) {
+            topWrap.style.display = 'block';
+            topWrap.style.zIndex = '10';
+            topWrap.style.top = `${State.trumpOffsetY}px`;
+            topWrap.style.left = `${State.trumpOffsetX}px`;
+            topWrap.style.transform = `rotate(${State.trumpRotationDeg}deg)`;
+          }
+          if (bottomWrap) {
+            bottomWrap.style.display = 'block';
+            bottomWrap.style.zIndex = '25';
+            bottomWrap.style.top = '8px';
+            bottomWrap.style.left = '11px';
+            bottomWrap.style.transform = 'rotate(-3deg)';
+          }
+          bottomEl.innerHTML = renderTrumpCardFaceHtml(activeTopCard, 'TRUMF (1.)', 'bg-amber-400 text-stone-950');
+          topEl.innerHTML = renderTrumpCardFaceHtml(underCard, 'POD TRUMFEM', 'bg-stone-900/85 text-stone-300');
+        } else {
+          // Zvolen vrchní trumf -> spodní trumf se zasunul dospodu pod balíček a vrchní trumf vládne nahoře
+          if (bottomWrap) {
+            bottomWrap.style.display = 'block';
+            bottomWrap.style.zIndex = '5';
+            bottomWrap.style.top = '18px';
+            bottomWrap.style.left = '14px';
+            bottomWrap.style.transform = 'rotate(4deg) scale(0.95)';
+          }
+          if (topWrap) {
+            topWrap.style.display = 'block';
+            topWrap.style.zIndex = '25';
+            topWrap.style.top = `${State.trumpOffsetY - 8}px`;
+            topWrap.style.left = `${State.trumpOffsetX}px`;
+            topWrap.style.transform = `rotate(${State.trumpRotationDeg}deg)`;
+          }
+          const bottomDeckCard = State.trumpStack[State.trumpStack.length - 1];
+          bottomEl.innerHTML = renderTrumpCardFaceHtml(bottomDeckCard, 'ZASUNUTÝ', 'bg-stone-900/80 text-stone-400');
+          topEl.innerHTML = renderTrumpCardFaceHtml(activeTopCard, 'TRUMF (2.)', 'bg-amber-400 text-stone-950');
+        }
       } else {
+        // Fáze volby trumfu: spodní trumf je viditelný ze 45–55 %, vrchní trumf leží pootočený (-75° až +75°) přes něj
         if (bottomWrap) {
           bottomWrap.style.display = 'block';
-          bottomWrap.style.transform = 'rotate(0deg)';
+          bottomWrap.style.zIndex = '10';
           bottomWrap.style.top = '2px';
-          bottomWrap.style.left = '4px';
+          bottomWrap.style.left = '11px';
+          bottomWrap.style.transform = 'rotate(0deg)';
         }
         if (topWrap) {
           topWrap.style.display = 'block';
-          topWrap.style.transform = 'rotate(74deg)';
-          topWrap.style.top = '32px';
-          topWrap.style.left = '4px';
+          topWrap.style.zIndex = '20';
+          topWrap.style.top = `${State.trumpOffsetY}px`;
+          topWrap.style.left = `${State.trumpOffsetX}px`;
+          topWrap.style.transform = `rotate(${State.trumpRotationDeg}deg)`;
         }
 
-        const bImg = getCardImagePath(State.bottomTrumpCard);
-        const { points: bPts } = getCardPowerAndPoints(State.bottomTrumpCard, State.bottomTrumpCard.suit);
-        const showBPts = State.showCardPoints && bPts > 0;
-        const bSuit = SUITS[State.bottomTrumpCard.suit];
-
-        bottomEl.className = 'marias-card trump-card-size flex flex-col justify-between p-0 border border-amber-500/30';
-        bottomEl.innerHTML = `
-          <img src="${bImg}" alt="${State.bottomTrumpCard.rankName}" class="w-full h-full object-fill rounded-[7px] pointer-events-none select-none block"
-               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-          <div class="hidden absolute inset-0 flex flex-col justify-between p-1 bg-[#fffdfa]">
-            <div class="flex items-center gap-0.5 leading-none">
-              <span class="font-black text-sm" style="color: ${bSuit.color}">${State.bottomTrumpCard.rankShort}</span>
-              <span class="text-sm" style="color: ${bSuit.color}">${bSuit.symbol}</span>
-            </div>
-            <div class="text-center font-serif-title font-bold text-[9px] text-stone-600 pb-0.5">${State.bottomTrumpCard.rankName}</div>
-          </div>
-          <div class="absolute bottom-1 right-1 text-[7px] bg-stone-900/80 text-stone-200 border border-stone-600 rounded px-1 font-bold py-0.5 z-10">
-            1. SPODNÍ
-          </div>
-          ${showBPts ? `<div class="absolute bottom-1 left-1 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow pointer-events-none z-10">${bPts}b</div>` : ''}
-        `;
-
-        const tImg = getCardImagePath(State.topTrumpCard);
-        const { points: tPts } = getCardPowerAndPoints(State.topTrumpCard, State.topTrumpCard.suit);
-        const showTPts = State.showCardPoints && tPts > 0;
-        const tSuit = SUITS[State.topTrumpCard.suit];
-
-        topEl.className = 'marias-card trump-card-size flex flex-col justify-between p-0 border border-stone-800 shadow-2xl';
-        topEl.innerHTML = `
-          <img src="${tImg}" alt="${State.topTrumpCard.rankName}" class="w-full h-full object-fill rounded-[7px] pointer-events-none select-none block"
-               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-          <div class="hidden absolute inset-0 flex flex-col justify-between p-1 bg-[#fffdfa]">
-            <div class="flex items-center gap-0.5 leading-none">
-              <span class="font-black text-sm" style="color: ${tSuit.color}">${State.topTrumpCard.rankShort}</span>
-              <span class="text-sm" style="color: ${tSuit.color}">${tSuit.symbol}</span>
-            </div>
-            <div class="text-center font-serif-title font-bold text-[9px] text-stone-600 pb-0.5">${State.topTrumpCard.rankName}</div>
-          </div>
-          <div class="absolute bottom-1 right-1 text-[7px] bg-amber-400 rounded px-1 font-extrabold text-stone-950 py-0.5 shadow z-10">
-            2. VRCHNÍ
-          </div>
-          ${showTPts ? `<div class="absolute bottom-1 left-1 text-[8px] bg-amber-400 text-stone-950 font-black px-1 rounded-sm shadow pointer-events-none z-10">${tPts}b</div>` : ''}
-        `;
+        bottomEl.innerHTML = renderTrumpCardFaceHtml(State.bottomTrumpCard, '1. SPODNÍ', 'bg-stone-900/85 text-stone-200 border border-stone-600');
+        topEl.innerHTML = renderTrumpCardFaceHtml(State.topTrumpCard, '2. VRCHNÍ', 'bg-amber-400 text-stone-950');
       }
 
+      // Tlačítko pro šíbování (zobrazí i zda půjde o šíbování 7 nebo 8 a kolik trumfů hráč vezme)
       const btnSib = document.getElementById('btnQuickSibovat');
+      const btnSkipSib = document.getElementById('btnSkipPreTrickSib');
       if (btnSib) {
-        const canSib = State.phase === 'PLAYING' && State.userHand.some(c => c.suit === State.activeTrumpSuit && c.rankId === '7');
-        btnSib.classList.toggle('hidden', !canSib);
+        const canSib = canPlayerSibovat('USER');
+        if (canSib) {
+          const info = getSibovaniInfo('USER');
+          btnSib.textContent = info.cardsToTakeCount > 1
+            ? `🔄 Šíbovat za ${info.exchangeRankId} (${info.cardsToTakeCount} trumfy!)`
+            : `🔄 Šíbovat trumf za ${info.exchangeRankId}`;
+          btnSib.classList.remove('hidden');
+        } else {
+          btnSib.classList.add('hidden');
+        }
+      }
+      if (btnSkipSib) {
+        btnSkipSib.classList.toggle('hidden', State.phase !== 'PRE_TRICK_SIB');
       }
     }
 
@@ -1482,34 +2349,30 @@
       if (pStack) {
         pStack.innerHTML = '';
         const count = State.userTricksWon.length;
-        if (count > 0) {
-          for (let i = 0; i < count; i++) {
-            const cardEl = document.createElement('div');
-            cardEl.className = 'pile-card card-back absolute bottom-0 right-0 shadow';
-            const rot = ((i * 3) % 9) - 4;
-            const shiftX = (i * 1.5) % 8;
-            const shiftY = (i * 1.2) % 6;
-            cardEl.style.transform = `translate(-${shiftX}px, -${shiftY}px) rotate(${rot}deg)`;
-            cardEl.style.zIndex = i + 1;
-            pStack.appendChild(cardEl);
-          }
+        for (let i = 0; i < count; i++) {
+          const cardEl = document.createElement('div');
+          cardEl.className = 'pile-card card-back absolute bottom-0 right-0 shadow';
+          const rot = ((i * 3) % 9) - 4;
+          const shiftX = (i * 1.5) % 8;
+          const shiftY = (i * 1.2) % 6;
+          cardEl.style.transform = `translate(-${shiftX}px, -${shiftY}px) rotate(${rot}deg)`;
+          cardEl.style.zIndex = i + 1;
+          pStack.appendChild(cardEl);
         }
       }
 
       if (bStack) {
         bStack.innerHTML = '';
         const count = State.botTricksWon.length;
-        if (count > 0) {
-          for (let i = 0; i < count; i++) {
-            const cardEl = document.createElement('div');
-            cardEl.className = 'pile-card card-back absolute top-0 right-0 shadow';
-            const rot = ((i * 4) % 10) - 5;
-            const shiftX = (i * 1.5) % 8;
-            const shiftY = (i * 1.2) % 6;
-            cardEl.style.transform = `translate(-${shiftX}px, ${shiftY}px) rotate(${rot}deg)`;
-            cardEl.style.zIndex = i + 1;
-            bStack.appendChild(cardEl);
-          }
+        for (let i = 0; i < count; i++) {
+          const cardEl = document.createElement('div');
+          cardEl.className = 'pile-card card-back absolute top-0 right-0 shadow';
+          const rot = ((i * 4) % 10) - 5;
+          const shiftX = (i * 1.5) % 8;
+          const shiftY = (i * 1.2) % 6;
+          cardEl.style.transform = `translate(-${shiftX}px, ${shiftY}px) rotate(${rot}deg)`;
+          cardEl.style.zIndex = i + 1;
+          bStack.appendChild(cardEl);
         }
       }
     }
@@ -1522,12 +2385,28 @@
       renderWonTricksPiles();
 
       const badge = document.getElementById('activeTrumpBadge');
+      const chooserBadge = document.getElementById('chooserHeaderBadge');
       if (badge) {
         if (State.activeTrumpSuit) {
           const s = SUITS[State.activeTrumpSuit];
           badge.innerHTML = `<span style="color: ${s.color}">${s.name} ${s.symbol}</span>`;
+          if (chooserBadge) {
+            chooserBadge.textContent = `Volitel: ${State.trumpChooser === 'USER' ? 'Ty' : 'Kuba'}`;
+            chooserBadge.classList.remove('hidden');
+          }
         } else {
           badge.innerHTML = `<span class="text-white/40">Zatím neurčen</span>`;
+          if (chooserBadge) chooserBadge.classList.add('hidden');
+        }
+      }
+
+      const disBadge = document.getElementById('disagreementBadge');
+      if (disBadge) {
+        if (State.consecutiveDisagreements > 0) {
+          disBadge.textContent = `Neshody: ${State.consecutiveDisagreements}/2`;
+          disBadge.classList.remove('hidden');
+        } else {
+          disBadge.classList.add('hidden');
         }
       }
 
@@ -1550,12 +2429,31 @@
 
       const pBadge = document.getElementById('playerRoleBadge');
       const bBadge = document.getElementById('botRoleBadge');
-      if (pBadge) pBadge.textContent = State.dealer === 'USER' ? 'Rozdávající' : 'Protihráč';
-      if (bBadge) bBadge.textContent = State.dealer === 'BOT' ? 'Rozdávající' : 'Protihráč';
+      if (pBadge) pBadge.textContent = State.dealer === 'USER' ? 'Rozdávající' : 'Protihráč (vynáší 1.)';
+      if (bBadge) bBadge.textContent = State.dealer === 'BOT' ? 'Rozdávající' : 'Protihráč (vynáší 1.)';
+
+      // Tlačítko v horní liště pro položení karet bez pokuty 20 Kč při 100b hlášce soupeře (během 1. štychu)
+      const btnFold100 = document.getElementById('btnFoldNoPenalty');
+      if (btnFold100) {
+        const canFoldNow = State.phase === 'PLAYING' && State.trickNumber === 1 &&
+                           State.trumpChooser === 'USER' && State.defenderHas100MeldAgainstUser;
+        btnFold100.classList.toggle('hidden', !canFoldNow);
+      }
 
       const notice = document.getElementById('turnActionNotice');
       if (notice) {
-        if (State.phase === 'PLAYING') {
+        if (State.phase === 'INITIAL_CUT') {
+          notice.className = 'bg-amber-400 text-stone-950 font-black px-2 py-0.5 rounded-full text-[9px] shadow-lg border border-amber-300';
+          notice.textContent = 'Sejmi kartu pro určení 1. rozdávajícího';
+        } else if (State.phase === 'DISCARDING_SIB') {
+          notice.className = 'bg-sky-400 text-stone-950 font-black px-2.5 py-0.5 rounded-full text-[9px] shadow-lg animate-pulse border border-sky-200';
+          notice.textContent = State.selectedCardId
+            ? `Klepni znovu pro odložení karty pod trumf (zbývá odložit: ${State.discardNeededCount})`
+            : `Šíbování: Vyber z ruky ${State.discardNeededCount} kartu/y k odložení pod trumf`;
+        } else if (State.phase === 'PRE_TRICK_SIB') {
+          notice.className = 'bg-amber-400 text-stone-950 font-black px-2.5 py-0.5 rounded-full text-[9px] shadow-lg animate-pulse border border-amber-200';
+          notice.textContent = 'Můžeš šíbovat před 1. štychem (nebo klikni Hrát bez šíbování ▶)';
+        } else if (State.phase === 'PLAYING') {
           if (State.isResolvingTrick) {
             notice.className = 'bg-stone-900/90 text-stone-300 font-medium px-2 py-0.5 rounded-full text-[9px] border border-white/10';
             notice.textContent = 'Vyhodnocení štychu...';
@@ -1573,10 +2471,10 @@
           }
         } else if (State.phase.startsWith('BIDDING')) {
           notice.className = 'bg-black/60 text-amber-300 font-medium px-2 py-0.5 rounded-full text-[9px] border border-amber-500/30';
-          notice.textContent = 'Probíhá volba trumfů';
+          notice.textContent = 'Probíhá volba trumfů (na stole leží 3 karty na dobrání)';
         } else {
           notice.className = 'bg-black/60 text-stone-300 font-medium px-2 py-0.5 rounded-full text-[9px] border border-white/10';
-          notice.textContent = 'Čeká se na další kolo';
+          notice.textContent = 'Kolo ukončeno';
         }
       }
     }
@@ -1586,13 +2484,34 @@
       if (!input || !input.value.trim()) return;
       const text = input.value.trim();
       input.value = '';
-      logEvent('Ty', text, 'chat');
+      logEvent('Ty', text);
 
       setTimeout(() => {
-        const replies = ['Jasný!', 'Uvidíme!', 'S tímhle na mě nechoď.', 'Pěkná hra!', 'Na zdraví! 🍻'];
+        const replies = ['Jasný!', 'Uvidíme u posledního štychu!', 'S tímhle na mě nechoď.', 'Pěkná hra!', 'Na zdraví! 🍻'];
         const reply = replies[Math.floor(Math.random() * replies.length)];
-        logEvent('Kuba', reply, 'chat');
-      }, 1000);
+        logEvent('Kuba', reply);
+      }, 900);
+    }
+
+    /**
+     * Umožní okamžité stažení čistého zdrojového souboru index.html přímo do PC uživatele.
+     */
+    function downloadIndexHtmlToPC() {
+      try {
+        const source = State.htmlSourceSnapshot || ('<!DOCTYPE html>\n' + document.documentElement.outerHTML);
+        const blob = new Blob([source], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'index.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        showToast('Soubor index.html stažen! 💾');
+      } catch (e) {
+        logEvent('Systém', 'Stažení souboru selhalo.');
+      }
     }
 
     function initListeners() {
@@ -1606,15 +2525,24 @@
         };
       }
 
+      const btnCut = document.getElementById('btnPerformCut');
+      if (btnCut) {
+        btnCut.onclick = (e) => {
+          e.stopPropagation();
+          handleInitialCutAction();
+        };
+      }
+
       const btnTake = document.getElementById('btnTakeTrump');
       const btnPass = document.getElementById('btnPassTrump');
       if (btnTake) {
         btnTake.onclick = (e) => {
           e.stopPropagation();
           document.getElementById('biddingBanner').classList.add('hidden');
-          const card = State.phase === 'BIDDING_BOTTOM' ? State.bottomTrumpCard : State.topTrumpCard;
-          logEvent('Ty', `Beru trumf (${SUITS[card.suit].name})!`);
-          applyTrumpChoice('USER', card.suit);
+          const pos = State.phase === 'BIDDING_BOTTOM' ? 'BOTTOM' : 'TOP';
+          const card = pos === 'BOTTOM' ? State.bottomTrumpCard : State.topTrumpCard;
+          logEvent('Ty', `Beru ${pos === 'BOTTOM' ? 'spodní' : 'vrchní'} trumf (${SUITS[card.suit].name})!`);
+          applyTrumpChoice('USER', card.suit, pos);
         };
       }
       if (btnPass) {
@@ -1622,8 +2550,13 @@
           e.stopPropagation();
           document.getElementById('biddingBanner').classList.add('hidden');
           const currentPhase = State.phase === 'BIDDING_BOTTOM' ? 'BOTTOM' : 'TOP';
-          logEvent('Ty', `Neberu ${currentPhase === 'BOTTOM' ? 'spodní' : 'vrchní'} trumf.`);
-          advanceBiddingAfterPass('USER', currentPhase);
+          if (currentPhase === 'TOP' && State.dealer === 'USER' && State.consecutiveDisagreements >= 2) {
+            logEvent('Ty', 'Vzdávám hru při 3. neshodě a platím 20 Kč do banku.');
+            handleThirdDisagreementSurrender('USER');
+          } else {
+            logEvent('Ty', `Neberu ${currentPhase === 'BOTTOM' ? 'spodní' : 'vrchní'} trumf.`);
+            advanceBiddingAfterPass('USER', currentPhase);
+          }
         };
       }
 
@@ -1644,17 +2577,49 @@
         };
       }
 
+      const btnSkipSib = document.getElementById('btnSkipPreTrickSib');
+      if (btnSkipSib) {
+        btnSkipSib.onclick = (e) => {
+          e.stopPropagation();
+          startTrick1Play();
+        };
+      }
+
+      const btnFoldTop = document.getElementById('btnFoldNoPenalty');
+      const btnConfirmFold = document.getElementById('btnConfirmFoldNoPenalty');
+      const btnCont100 = document.getElementById('btnContinueAgainstHundred');
+
+      if (btnFoldTop) {
+        btnFoldTop.onclick = (e) => {
+          e.stopPropagation();
+          handleFoldOn100Meld('USER');
+        };
+      }
+      if (btnConfirmFold) {
+        btnConfirmFold.onclick = (e) => {
+          e.stopPropagation();
+          handleFoldOn100Meld('USER');
+        };
+      }
+      if (btnCont100) {
+        btnCont100.onclick = (e) => {
+          e.stopPropagation();
+          document.getElementById('hundredMeldFoldModal').classList.add('hidden');
+          resolveTrick();
+        };
+      }
+
       const bindQuickChat = (id, msg) => {
         const b = document.getElementById(id);
         if (b) {
           b.onclick = () => {
-            logEvent('Ty', msg, 'chat');
+            logEvent('Ty', msg);
             if (msg.includes('Minda')) Sound.minda();
           };
         }
       };
       bindQuickChat('btnQuickMinda', 'Minda! 🔥');
-      bindQuickChat('btnQuickBela', 'Béla! 👑');
+      bindQuickChat('btnQuickBela', 'Bela! 👑');
       bindQuickChat('btnQuickPivo', 'Jedno pivo sem! 🍺');
       bindQuickChat('btnQuickDobra', 'Dobrá karta! 👍');
 
@@ -1677,6 +2642,11 @@
       const btnCloseTuner = document.getElementById('btnCloseTuner');
       if (btnTuner && tunerModal) btnTuner.onclick = () => tunerModal.classList.remove('hidden');
       if (btnCloseTuner && tunerModal) btnCloseTuner.onclick = () => tunerModal.classList.add('hidden');
+
+      const btnDlLeft = document.getElementById('btnDownloadHtmlLeft');
+      const btnDlModal = document.getElementById('btnDownloadHtmlModal');
+      if (btnDlLeft) btnDlLeft.onclick = downloadIndexHtmlToPC;
+      if (btnDlModal) btnDlModal.onclick = downloadIndexHtmlToPC;
 
       const togglePts = document.getElementById('togglePointBadges');
       if (togglePts) {
@@ -1736,8 +2706,10 @@
     }
 
     window.onload = function() {
+      // Uložíme si čistý snímek původního HTML dokumentu pro tlačítko stažení do PC
+      State.htmlSourceSnapshot = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
       initListeners();
-      startNewRound();
+      showInitialCutDialog();
     };
   </script>
 </body>
