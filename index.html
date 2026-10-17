@@ -565,6 +565,13 @@
             <span id="playerNameBadge" class="font-extrabold text-white">Ty</span>
             <span id="playerRoleBadge" class="text-[8px] text-amber-400 font-medium ml-0.5">Protihráč</span>
           </div>
+        </div>
+
+        <div id="playerHandContainer" class="relative w-full max-w-[680px] h-full flex items-end justify-center pb-1"></div>
+      </div>
+
+    </section>
+
     <!-- Plovoucí dialog pro úvodní sejmutí karty před 1. hrou (pro 2 i 3 hráče) -->
     <div id="initialCutModal" class="hidden absolute inset-0 bg-black/75 backdrop-blur-sm z-40 flex items-center justify-center p-3">
       <div class="bg-stone-900/95 border border-amber-500/70 rounded-2xl max-w-[380px] w-full p-4 text-center shadow-2xl space-y-2.5">
@@ -2224,7 +2231,7 @@
       // Rotace pro příští kolo (ve 3 hráčích jde poražený na střídačku a čekající hráč ze střídačky přisedá ke stolu)
       if (g.maxPlayers === 3 && typeof g.benchIdx === 'number' && g.benchIdx >= 0) {
         const challengerIdx = g.benchIdx;
-        constchallengerName = g.players[challengerIdx].name;
+        const challengerName = g.players[challengerIdx].name;
         const loserName = g.players[loserIdx].name;
         g.benchIdx = loserIdx;
         // Vítěz zůstává u stolu, vyzyvatel ze střídačky přisedá; role rozdávajícího se střídá
@@ -4127,6 +4134,47 @@
         slot2.innerHTML = '';
         delete slot2.dataset.cardId;
       }
+    }
+
+    function renderWonTricksPiles() {
+      const pStack = document.getElementById('playerTricksStackContainer');
+      const bStack = document.getElementById('botTricksStackContainer');
+
+      if (pStack) {
+        pStack.innerHTML = '';
+        const count = State.userTricksWon.length;
+        if (count > 0) {
+          for (let i = 0; i < count; i++) {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'pile-card card-back absolute bottom-0 right-0 shadow';
+            const rot = ((i * 3) % 9) - 4;
+            const shiftX = (i * 1.5) % 8;
+            const shiftY = (i * 1.2) % 6;
+            cardEl.style.transform = `translate(-${shiftX}px, -${shiftY}px) rotate(${rot}deg)`;
+            cardEl.style.zIndex = i + 1;
+            pStack.appendChild(cardEl);
+          }
+        }
+      }
+
+      if (bStack) {
+        bStack.innerHTML = '';
+        const count = State.botTricksWon.length;
+        if (count > 0) {
+          for (let i = 0; i < count; i++) {
+            const cardEl = document.createElement('div');
+            cardEl.className = 'pile-card card-back absolute top-0 right-0 shadow';
+            const rot = ((i * 4) % 10) - 5;
+            const shiftX = (i * 1.5) % 8;
+            const shiftY = (i * 1.2) % 6;
+            cardEl.style.transform = `translate(-${shiftX}px, ${shiftY}px) rotate(${rot}deg)`;
+            cardEl.style.zIndex = i + 1;
+            bStack.appendChild(cardEl);
+          }
+        }
+      }
+    }
+
     function updateUI(isSpectatingOnBench = false, bottomPlayerObj = null, topPlayerObj = null) {
       renderPlayerHand();
       renderOpponentHand();
